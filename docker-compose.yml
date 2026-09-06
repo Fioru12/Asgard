@@ -1,0 +1,203 @@
+# Asgard Suite — deploy completo con un comando:
+#   docker compose up -d
+#
+# Servizi HTTP:
+#   Ragnarök    → http://localhost:8080  (dashboard: /dashboard)
+#   Heimdall    → http://localhost:18000 (host) → 8000 (container)
+#   Gjallarhorn → http://localhost:8090
+#   Forseti     → http://localhost:8091  (questionario GDPR/NIS2)
+#   Bifrost     → http://localhost:8092
+#
+# Background (no port, eseguiti on-demand dai playbook):
+#   Mjolnir     → forensic triage
+#   Yggdrasil   → Active Directory audit
+#   Fenrir      → threat intelligence
+#   Sleipnir    → SOAR playbook engine
+#
+# Imposta prima una API key per Ragnarök (generata automaticamente se assente):
+#   set RAGNAROK_API_KEY=una-chiave-lunga-e-casuale   (PowerShell: $env:RAGNAROK_API_KEY="...")
+
+name: asgard
+
+x-common-env: &common-env
+  RAG_AUTO_INDEX_MINUTES: "60"        # re-indicizzazione oraria
+  RAG_ANOMALY_WATCH_MINUTES: "15"     # spike push via WebSocket
+  # Invio automatico del digest del report proattivo via Gjallarhorn.
+  # Due modalità (opzionali, non esclusive):
+  #   RAG_REPORT_SEND_MINUTES=1440  ogni N minuti (0 = disabilitato)
+  #   RAG_REPORT_SEND_CRON=08:00    ogni giorno all'ora fissa locale
+  # Attiva a scelta: usa 0 per disabilitare il timer a intervalli e lascia
+  # commentato RAG_REPORT_SEND_CRON per disattivare anche il giornaliero.
+  RAG_REPORT_SEND_MINUTES: "1440"
+# RAG_REPORT_SEND_CRON: "08:00"   # es. report ogni mattina alle 08:00
+  GJALLARHORN_HUB_URL: http://gjallarhorn:8090
+  # Il vector DB del RAG engine è volatile (ricreato dall'auto-index ogni ora):
+  # usiamo /tmp (writable da qualsiasi utente) invece di /app/asgard-state
+  # per evitare problemi di permessi con i volume Docker montati come root.
+  ASGARD_RAG_DB_PATH: /tmp/asgard-rag-db
+
+services:
+  # ------------------------------------------------------------------
+  # Hub di notifiche centralizzato (Telegram/email/webhook)
+  # ------------------------------------------------------------------
+  gjallarhorn:
+    build: .
+    image: asgard-suite:latest
+    container_name: asgard-gjallarhorn
+    command: python main.py serve --host 0.0.0.0 --port 8090
+    working_dir: /app/Gjallarhorn
+    environment:
+      <<: *common-env
+      GJALLARHORN_API_KEY: ${GJALLARHORN_API_KEY:-asgard-gjallarhorn-key}
+    ports:
+      - "8090:8090"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8090/')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ------------------------------------------------------------------
+  # HIDS: API + monitor log (il monitor richiede accesso ai log dell'host)
+  # ------------------------------------------------------------------
+  heimdall:
+    build: .
+    image: asgard-suite:latest
+    container_name: asgard-heimdall
+    command: python main.py api --host 0.0.0.0 --port 8000
+    working_dir: /app/Heimdall
+    environment:
+      <<: *common-env
+      HEIMDALL_API_KEY: ${HEIMDALL_API_KEY:-asgard-heimdall-key}
+    ports:
+      - "18000:8000"
+    restart: unless-stopped
+
+  # ------------------------------------------------------------------
+  # Scanner di rete (API)
+  # ------------------------------------------------------------------
+  bifrost:
+    build: .
+    image: asgard-suite:latest
+    container_name: asgard-bifrost
+    command: uvicorn api.server:app --host 0.0.0.0 --port 8092
+    working_dir: /app/Bifrost
+    environment:
+      <<: *common-env
+      BIFROST_API_KEY: ${BIFROST_API_KEY:-asgard-bifrost-key}
+    ports:
+      - "8092:8092"
+    restart: unless-stopped
+
+  # ------------------------------------------------------------------
+  # Compliance GDPR/NIS2: questionario web
+  # ------------------------------------------------------------------
+  forseti:
+    build: .
+    image: asgard-suite:latest
+    container_name: asgard-forseti
+    command: python main.py serve --host 0.0.0.0 --port 8091
+    working_dir: /app/Forseti
+    environment:
+      <<: *common-env
+    ports:
+      - "8091:8091"
+    restart: unless-stopped
+
+  # ------------------------------------------------------------------
+  # Orchestrator AI (crown jewel): dashboard, chat, RAG, anomalie
+  # ------------------------------------------------------------------
+  ragnarok:
+    build: .
+    image: asgard-suite:latest
+    container_name: asgard-ragnarok
+    working_dir: /app/Ragnarok/backend
+    environment:
+      <<: *common-env
+      RAGNAROK_HOST: 0.0.0.0
+      RAGNAROK_PORT: "8080"
+      RAGNAROK_API_KEY: ${RAGNAROK_API_KEY:-}
+      # LLM opzionale: ollama su host, OpenAI, OpenRouter...
+            # OLLAMA_URL: http://host.docker.internal:11434
+    ports:
+      - "8080:8080"
+    depends_on:
+      gjallarhorn:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/api/v1/rag/stats')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ------------------------------------------------------------------
+  # Forensic triage: analisi host compromesso (snapshot processi, VirusTotal)
+  # ------------------------------------------------------------------
+  mjolnir:
+    build: .
+    image: asgard-suite:latest
+    container_name: asgard-mjolnir
+    working_dir: /app/Mjolnir
+    environment:
+      <<: *common-env
+      MJOLNIR_API_KEY: ${MJOLNIR_API_KEY:-asgard-mjolnir-key}
+    restart: unless-stopped
+
+  # ------------------------------------------------------------------
+  # Active Directory audit (sicurezza AD via LDAP/LDAPS o demo mode)
+  # ------------------------------------------------------------------
+  yggdrasil:
+    build: .
+    image: asgard-suite:latest
+    container_name: asgard-yggdrasil
+    working_dir: /app/Yggdrasil
+    environment:
+      <<: *common-env
+      YGGDRASIL_API_KEY: ${YGGDRASIL_API_KEY:-asgard-yggdrasil-key}
+    restart: unless-stopped
+
+  # ------------------------------------------------------------------
+  # Threat intelligence aggregator: CISA KEV + OTX
+  # ------------------------------------------------------------------
+  fenrir:
+    build: .
+    image: asgard-suite:latest
+    container_name: asgard-fenrir
+    working_dir: /app/Fenrir
+    environment:
+      <<: *common-env
+      FENRIR_API_KEY: ${FENRIR_API_KEY:-asgard-fenrir-key}
+    restart: unless-stopped
+
+  # ------------------------------------------------------------------
+  # SOAR engine: playbook YAML che orchestra gli altri moduli
+  # ------------------------------------------------------------------
+  sleipnir:
+    build: .
+    image: asgard-suite:latest
+    container_name: asgard-sleipnir
+    working_dir: /app/Sleipnir
+    environment:
+      <<: *common-env
+      SLEIPNIR_API_KEY: ${SLEIPNIR_API_KEY:-asgard-sleipnir-key}
+    depends_on:
+      heimdall:
+        condition: service_started
+      bifrost:
+        condition: service_started
+    restart: unless-stopped
+
+  # ------------------------------------------------------------------
+  # One-shot: prima indicizzazione dei dati nella dashboard
+  #   docker compose --profile batch run --rm indexer
+  # ------------------------------------------------------------------
+  indexer:
+    build: .
+    image: asgard-suite:latest
+    profiles: ["batch"]
+    working_dir: /app/Ragnarok/backend
+    environment:
+      <<: *common-env
+    command: python -m rag.cli index

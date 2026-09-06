@@ -1,0 +1,110 @@
+# =============================================================================
+# Asgard Express — Stack Docker minimale per PMI
+# Usa: docker compose -f docker-compose-express.yml up -d
+# -----------------------------------------------------------------------------
+# Include SOLO i moduli essenziali: HIDS, Notifiche, Orchestratore + Dashboard
+# La conformità GDPR (Forseti) è inclusa. Puoi aggiungere altri moduli in seguito.
+# =============================================================================
+
+version: "3.8"
+
+x-common-env: &common-env
+  # Auto-indicizzazione ogni 15 minuti
+  RAG_AUTO_INDEX_MINUTES: "15"
+  # Controlla anomalie ogni 5 minuti (più sensibile per PMI)
+  RAG_ANOMALY_WATCH_MINUTES: "5"
+  # Percorso del DB vettoriale (writable da tutti)
+  ASGARD_RAG_DB_PATH: /tmp/asgard-rag-db
+  # Hub di notifica centralizzato
+  GJALLARHORN_HUB_URL: http://gjallarhorn-express:8090
+
+services:
+  # ---------------------------------------------------------------------------
+  # HIDS — rileva accessi sospetti su log e SSH
+  # ---------------------------------------------------------------------------
+  heimdall-express:
+    build: .
+    image: asgard-suite:latest
+    container_name: asgard-heimdall-express
+    working_dir: /app/Heimdall
+    command: python main.py monitor
+    environment:
+      <<: *common-env
+      HEIMDALL_API_KEY: ${RAGNAROK_API_KEY:-asgard-heimdall-express-key}
+    ports:
+      - "18000:8000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ---------------------------------------------------------------------------
+  # Notifiche centralizzate — Telegram, email, webhook
+  # ---------------------------------------------------------------------------
+  gjallarhorn-express:
+    build: .
+    image: asgard-suite:latest
+    container_name: asgard-gjallarhorn-express
+    working_dir: /app/Gjallarhorn
+    command: python main.py serve --host 0.0.0.0 --port 8090
+    environment:
+      <<: *common-env
+      GJALLARHORN_API_KEY: ${RAGNAROK_API_KEY:-asgard-gjallarhorn-express-key}
+    ports:
+      - "8090:8090"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8090/')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ---------------------------------------------------------------------------
+  # Orchestratore AI — dashboard, chat, RAG, anomalie
+  # ---------------------------------------------------------------------------
+  ragnarok-express:
+    build: .
+    image: asgard-suite:latest
+    container_name: asgard-ragnarok-express
+    working_dir: /app/Ragnarok/backend
+    environment:
+      <<: *common-env
+      RAGNAROK_HOST: 0.0.0.0
+      RAGNAROK_PORT: "8080"
+      RAGNAROK_API_KEY: ${RAGNAROK_API_KEY}
+      # LLM opzionale: puoi connettere Ollama locale o usare OpenAI/OpenRouter
+      # OLLAMA_URL: http://host.docker.internal:11434
+    ports:
+      - "8080:8080"
+    depends_on:
+      gjallarhorn-express:
+        condition: service_healthy
+    restart: unless-stopped
+        healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+
+  # ---------------------------------------------------------------------------
+  # Conformità GDPR/NIS2 — questionario web per PMI
+  # ---------------------------------------------------------------------------
+  forseti-express:
+    build: .
+    image: asgard-suite:latest
+    container_name: asgard-forseti-express
+    working_dir: /app/Forseti
+    command: python main.py serve --host 0.0.0.0 --port 8091
+    environment:
+      <<: *common-env
+    ports:
+      - "8091:8091"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8091/')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

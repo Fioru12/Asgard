@@ -1,0 +1,39 @@
+# Asgard Suite root — gitignore
+
+# Git / system
+.asgard-suite-repo/
+.git/
+.dockerignore
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+
+# Asgard runtime state
+asgard-state/
+backend/backups/
+*.db
+*.sqlite3
+
+# Tauri / node
+node_modules/
+src-tauri/target/
+
+# Secrets
+.env
+*.env
+!.env.example
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# OS
+Thumbs.db
+.DS_Store
