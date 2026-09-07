@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asgard | Il SOC Autonomo Sovrano per PMI & System Integrator</title>
+  <meta name="description" content="Difesa cyber enterprise-grade accessibile. Rilevamento intrusioni H24, audit Active Directory/Microsoft 365, triage forense in 60s e conformità garantita a NIS2, DORA e GDPR.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+
+  <!-- Aurora Mesh Background -->
+  <div class="cyber-bg"></div>
+
+  <!-- Floating Glass Dock Navigation -->
+  <div class="nav-wrapper">
+    <nav class="navbar">
+      <a href="#" class="nav-brand">
+        <div class="brand-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        </div>
+        <span>ASGARD</span>
+        <span class="brand-badge">v2.4 PRO</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#cockpit">Cockpit</a></li>
+        <li><a href="#bento">I 9 Guardiani</a></li>
+        <li><a href="#confronto">Perché Asgard</a></li>
+        <li><a href="#simulazione">Simulatore Live</a></li>
+        <li><a href="#calcolatore">Calcolatore NIS2</a></li>
+        <li><a href="#pricing">Piani B2B</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <div class="pulse-pill">
+          <span class="pulse-dot"></span>
+          <span>SOC LIVE ATTIVO</span>
+        </div>
+        <a href="#pricing" class="btn-nav-cta">Inizia Ora</a>
+      </div>
+    </nav>
+  </div>
+
+  <main>
+    <!-- Hero Section -->
+    <header class="hero container">
+      <div class="hero-pill">
+        <span class="dot-check">●</span>
+        <span>Conforme a Direttiva NIS2 (UE 2022/2555) • DORA RTS • ISO 27001 • GDPR</span>
+      </div>
+
+      <h1 class="titanium-title">
+        La sicurezza di un SOC aziendale.<br>
+        <span class="cyan-accent">Senza la complessità enterprise.</span>
+      </h1>
+
+      <p>
+        Proteggi la tua infrastruttura aziendale con la prima suite Blue Team all-in-one a sovranità del dato. Rilevamento intrusioni in tempo reale, audit Active Directory e Microsoft 365, triage forense in 60 secondi e risposta automatizzata.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#simulazione" class="btn-apple-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          Guarda la Difesa in Azione
+        </a>
+        <a href="#calcolatore" class="btn-apple-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l3 3"></path></svg>
+          Stima Esposizione Sanzioni NIS2
+        </a>
+      </div>
+
+      <!-- Trust Bar / Certification Seals -->
+      <div class="trust-bar">
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>NIS2 (UE 2022/2555) Ready</span>
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>DORA Resilience Controls</span>
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>100% Data Sovereignty (No Cloud Lock-in)</span>
+        </div>
+        <div class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>478+ Test Unitari Verificati</span>
+        </div>
+      </div>
+
+      <!-- Luxury Showcase Frame (Cockpit) -->
+      <div id="cockpit" class="showcase-frame">
+        <div class="showcase-inner">
+          <div class="showcase-topbar">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div class="mac-controls">
+                <span class="c-red"></span>
+                <span class="c-yellow"></span>
+                <span class="c-green"></span>
+              </div>
+              <span style="font-family: var(--font-mono); color: var(--text-dark);">
+                asgard-command-center // Active Fleet Telemetry [48 Endpoints]
+              </span>
+            </div>
+            <div style="display: flex; gap: 20px; font-family: var(--font-mono); font-size: 0.78rem;">
+              <span style="color: var(--text-dark);">LATENZA: 1.2ms</span>
+              <span style="color: var(--emerald);">PROTEZIONE: 100% ATTIVA</span>
+            </div>
+          </div>
+
+          <div class="showcase-grid">
+            <!-- Feed Card (Left) -->
+            <div class="glass-panel">
+              <div class="panel-header">
+                <span>Feed Minacce in Tempo Reale</span>
+                <span class="badge-tag b-crit">LIVE MITIGATION</span>
+              </div>
+              <div class="feed-stack">
+                <div class="feed-card">
+                  <div class="feed-top">
+                    <span class="badge-tag b-crit">CRITICAL</span>
+                    <span style="color: var(--text-dark);">14:02:18</span>
+                  </div>
+                  <div style="font-size: 0.88rem; font-weight: 600; color: #fff;">Brute-Force RDP da 203.0.113.42</div>
+                  <div style="font-size: 0.75rem; color: var(--cyan); font-family: var(--font-mono);">Heimdall HIDS • DC-PRIMARY-01</div>
+                </div>
+
+                <div class="feed-card">
+                  <div class="feed-top">
+                    <span class="badge-tag b-high">HIGH</span>
+                    <span style="color: var(--text-dark);">13:58:45</span>
+                  </div>
+                  <div style="font-size: 0.88rem; font-weight: 600; color: #fff;">Global Admin M365 senza 2FA</div>
+                  <div style="font-size: 0.75rem; color: var(--violet); font-family: var(--font-mono);">Yggdrasil Cloud • admin@azienda.it</div>
+                </div>
+
+                <div class="feed-card">
+                  <div class="feed-top">
+                    <span class="badge-tag b-ok">CONTAINED</span>
+                    <span style="color: var(--text-dark);">13:45:10</span>
+                  </div>
+                  <div style="font-size: 0.88rem; font-weight: 600; color: #fff;">Host anomalo isolato su subnet LAN</div>
+                  <div style="font-size: 0.75rem; color: var(--emerald); font-family: var(--font-mono);">Sleipnir SOAR Playbook #08</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Spatial Radar (Center) -->
+            <div class="glass-panel" style="justify-content: space-between; text-align: center;">
+              <div class="panel-header">
+                <span>Ricognizione Spaziale LAN</span>
+                <span style="color: var(--cyan); font-family: var(--font-mono);">BIFROST DISCOVERY</span>
+              </div>
+
+              <div class="radar-stage">
+                <div class="radar-sweep-beam"></div>
+                <div class="radar-shield">
+                  <span>SOC</span>
+                  <span style="color: var(--cyan);">ARMED</span>
+                </div>
+                <div class="radar-anomaly a1" title="Tentativo di Accesso Malevolo"></div>
+                <div class="radar-anomaly a2" title="Porta RDP Esplorata"></div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;">
+                <div style="background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border);">
+                  <div style="font-size: 1.2rem; font-family: var(--font-mono); font-weight: 800; color: #fff;" id="stat-endpoints">48</div>
+                  <div style="font-size: 0.65rem; color: var(--text-dark); text-transform: uppercase;">Endpoint</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border);">
+                  <div style="font-size: 1.2rem; font-family: var(--font-mono); font-weight: 800; color: var(--emerald);">0</div>
+                  <div style="font-size: 0.65rem; color: var(--text-dark); text-transform: uppercase;">Breach</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border);">
+                  <div style="font-size: 1.2rem; font-family: var(--font-mono); font-weight: 800; color: var(--amber);">1.695</div>
+                  <div style="font-size: 0.65rem; color: var(--text-dark); text-transform: uppercase;">KEV CVEs</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Compliance Posture (Right) -->
+            <div class="glass-panel">
+              <div class="panel-header">
+                <span>Indici di Conformità</span>
+                <span style="color: var(--emerald); font-family: var(--font-mono);">FORSETI ENGINE</span>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 18px;">
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">
+                    <span>NIS2 (Art. 21)</span>
+                    <span style="color: var(--cyan);">92%</span>
+                  </div>
+                  <div style="height: 6px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden;">
+                    <div style="width: 92%; height: 100%; background: linear-gradient(90deg, #0284c7, var(--cyan));"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">
+                    <span>DORA (Digital Resilience)</span>
+                    <span style="color: #ec4899;">88%</span>
+                  </div>
+                  <div style="height: 6px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden;">
+                    <div style="width: 88%; height: 100%; background: linear-gradient(90deg, var(--violet), #ec4899);"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">
+                    <span>ISO/IEC 27001:2022</span>
+                    <span style="color: var(--emerald);">95%</span>
+                  </div>
+                  <div style="height: 6px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden;">
+                    <div style="width: 95%; height: 100%; background: linear-gradient(90deg, #059669, var(--emerald));"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">
+                    <span>GDPR Art. 32</span>
+                    <span style="color: #34d399;">100%</span>
+                  </div>
+                  <div style="height: 6px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden;">
+                    <div style="width: 100%; height: 100%; background: linear-gradient(90deg, #10b981, #34d399);"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="margin-top: auto; padding-top: 18px; border-top: 1px solid var(--glass-border); text-align: center;">
+                <span style="font-size: 0.74rem; color: var(--text-dark); font-family: var(--font-mono);">
+                  REPORT PDF GENERATO CON 1 CLIC
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ====================================================================
+         BENTO GRID: THE 9 GUARDIANS
+         ==================================================================== -->
+    <section id="bento" class="section container">
+      <div class="section-eyebrow">ARCHITETTURA MODULARE BENTO</div>
+      <h2 class="section-heading titanium-title">Nove Guardiani. Un'Unica Fortezza.</h2>
+      <p class="section-sub">
+        Una sinergia di strumenti modulari progettati per operare autonomamente o coordinati all'unisono, coprendo ogni fase dell'Incident Response Lifecycle.
+      </p>
+
+      <div class="bento-grid">
+        <!-- 1. Ragnarök (Span 8 - Featured Hero Card) -->
+        <div class="bento-card span-8">
+          <div class="bento-top">
+            <div class="bento-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+            </div>
+            <span class="bento-tag">ORCHESTRATORE CENTRALE</span>
+          </div>
+          <div class="bento-title">Ragnarök: Il Centro di Comando del SOC</div>
+          <div class="bento-subtitle">API FastAPI ad alta concorrenza, RBAC multilivello e Copilot AI On-Premise</div>
+          <p class="bento-desc">
+            Il cervello della suite che aggrega telemetria, governa gli allarmi, coordina i playbook e integra un assistente AI locale (Ollama) in grado di analizzare incidenti senza mai inviare dati o log fuori dal perimetro aziendale.
+          </p>
+
+          <div class="bento-code-preview">
+            <div style="color: var(--cyan);">$ ragnarok start --bind 0.0.0.0:18000 --rbac-enforced</div>
+            <div style="color: var(--emerald);">[OK] 9 Moduli registrati • Motore RAG attivo • SQLite cifrato (Fernet at-rest)</div>
+            <div style="color: var(--text-dark);">[AI COPILOT] Modello Llama-3 locale pronto. Sovranità dei dati: 100% On-Premise.</div>
+          </div>
+        </div>
+
+        <!-- 2. Heimdall (Span 4 - Windows Native Agent) -->
+        <div class="bento-card span-4">
+          <div class="bento-top">
+            <div class="bento-icon" style="color: var(--cyan);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            <span class="bento-tag">HIDS & DEFENSE</span>
+          </div>
+          <div class="bento-title">Heimdall</div>
+          <div class="bento-subtitle">Agente Windows Nativo PowerShell</div>
+          <p class="bento-desc">
+            Zero dipendenze esterne. Si distribuisce via Active Directory GPO su 500 macchine con una riga di comando. Intercetta gli eventi 4625 (Brute-Force) e 4720 (Backdoor).
+          </p>
+          <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--cyan);">
+            .\Deploy-HeimdallAgent.ps1 -InstallTask
+          </div>
+        </div>
+
+        <!-- 3. Yggdrasil (Span 4 - Identity & Cloud M365) -->
+        <div class="bento-card span-4">
+          <div class="bento-top">
+            <div class="bento-icon" style="color: var(--emerald);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <span class="bento-tag">IDENTITY POSTURE</span>
+          </div>
+          <div class="bento-title">Yggdrasil</div>
+          <div class="bento-subtitle">Active Directory & Microsoft 365</div>
+          <p class="bento-desc">
+            Auditing profondo delle identità: stanare Global Admin senza 2FA, protocolli legacy e account guest inattivi prima che vengano sfruttati come vettore d'attacco.
+          </p>
+        </div>
+
+        <!-- 4. Fenrir (Span 4 - Threat Intel) -->
+        <div class="bento-card span-4">
+          <div class="bento-top">
+            <div class="bento-icon" style="color: var(--rose);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            </div>
+            <span class="bento-tag">THREAT INTEL</span>
+          </div>
+          <div class="bento-title">Fenrir</div>
+          <div class="bento-subtitle">1.695+ CVE CISA KEV & STIX 2.1</div>
+          <p class="bento-desc">
+            Confronta istantaneamente gli IP e gli hash con feed CTI globali archiviati localmente in SQLite ad altissime prestazioni per azzerare i falsi positivi.
+          </p>
+        </div>
+
+        <!-- 5. Mjolnir (Span 4 - Forensic Triage) -->
+        <div class="bento-card span-4">
+          <div class="bento-top">
+            <div class="bento-icon" style="color: #38bdf8;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+            </div>
+            <span class="bento-tag">INCIDENT TRIAGE</span>
+          </div>
+          <div class="bento-title">Mjolnir</div>
+          <div class="bento-subtitle">Triage Forense in &lt;60 Secondi</div>
+          <p class="bento-desc">
+            Cattura dump di memoria volatile, verifica persistenza nel registro di sistema e applica pattern YARA per intercettare webshell e ransom note.
+          </p>
+        </div>
+
+        <!-- 6. Sleipnir (Span 6 - SOAR Playbooks) -->
+        <div class="bento-card span-6">
+          <div class="bento-top">
+            <div class="bento-icon" style="color: var(--violet);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            </div>
+            <span class="bento-tag">SOAR AUTOMATION</span>
+          </div>
+          <div class="bento-title">Sleipnir: Playbook di Difesa Intelligente</div>
+          <div class="bento-subtitle">Esecutore AST Condizionale per Risposte Immediate H24</div>
+          <p class="bento-desc">
+            Reagisce alle intrusioni in frazioni di secondo quando l'IT manager dorme. Isola l'endpoint, termina processi malevoli e notifica i responsabili senza bisogno di intervento umano notturno.
+          </p>
+        </div>
+
+        <!-- 7. Forseti (Span 6 - Compliance Engine) -->
+        <div class="bento-card span-6">
+          <div class="bento-top">
+            <div class="bento-icon" style="color: var(--amber);">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+            </div>
+            <span class="bento-tag">GOVERNANCE & AUDIT</span>
+          </div>
+          <div class="bento-title">Forseti: Conformità Legale per le PMI</div>
+          <div class="bento-subtitle">Valutatore Continuo NIS2, DORA, ISO 27001 e GDPR</div>
+          <p class="bento-desc">
+            Mappa ogni controllo di sicurezza alle direttive europee, calcola il punteggio di conformità e genera report PDF esecutivi pronti per il CDA, gli assicuratori o i revisori esterni.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         COMPARISON SECTION: ASGARD VS. TRADITIONAL US VENDORS
+         ==================================================================== -->
+    <section id="confronto" class="section container">
+      <div class="section-eyebrow">IL VERO VALORE AZIENDALE</div>
+      <h2 class="section-heading titanium-title">Confronta Asgard con i Grandi Vendor USA</h2>
+      <p class="section-sub">
+        Le grandi multinazionali spendono centinaia di migliaia di euro per licenze complesse. Ecco perché le PMI scelgono Asgard.
+      </p>
+
+      <div class="compare-container">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Parametro di Confronto</th>
+              <th class="th-asgard">ASGARD SEC (Blue Team Suite)</th>
+              <th>Vendor USA (CrowdStrike / Splunk)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Costo per PMI (50-100 PC)</strong></td>
+              <td class="td-highlight"><span style="color: var(--emerald);">249 € / mese</span> (Flat & Trasparente)</td>
+              <td style="color: var(--text-muted);">$3.500+ / mese (Licenze per-agent + add-on)</td>
+            </tr>
+            <tr>
+              <td><strong>Tempo di Deployment</strong></td>
+              <td class="td-highlight"><span style="color: var(--emerald);">10 Minuti</span> (PowerShell GPO nativo)</td>
+              <td style="color: var(--text-muted);">Da 2 a 6 Mesi di consulenza dedicata</td>
+            </tr>
+            <tr>
+              <td><strong>Sovranità dei Dati</strong></td>
+              <td class="td-highlight"><span style="color: var(--emerald);">100% On-Premise / Air-Gapped</span></td>
+              <td style="color: var(--text-muted);">Dati e log esportati su cloud esteri (US Cloud Act)</td>
+            </tr>
+            <tr>
+              <td><strong>Personale Richiesto</strong></td>
+              <td class="td-highlight"><span style="color: var(--emerald);">1 Tecnico IT Generale</span> (o fornitore MSP)</td>
+              <td style="color: var(--text-muted);">Team di 3-4 analisti SOC certificati H24</td>
+            </tr>
+            <tr>
+              <td><strong>Conformità NIS2 / DORA</strong></td>
+              <td class="td-highlight"><span style="color: var(--emerald);">Inclusa Nativamente</span> (Report PDF a norma)</td>
+              <td style="color: var(--text-muted);">Modulo extra a pagamento o consulenza esterna</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         LIVE INTERACTIVE SIMULATOR (DUAL-VIEW)
+         ==================================================================== -->
+    <section id="simulazione" class="section container">
+      <div class="section-eyebrow">SIMULAZIONE END-TO-END IN DIRETTA</div>
+      <h2 class="section-heading titanium-title">Osserva la Macchina di Difesa in Azione</h2>
+      <p class="section-sub">
+        Inietta un attacco brute-force realistico e osserva il coordinamento tra Heimdall, Sleipnir, Fenrir e Mjolnir.
+      </p>
+
+      <div class="sim-wrapper">
+        <!-- Terminal (Left) -->
+        <div class="terminal-box">
+          <div class="terminal-header">
+            <div class="mac-controls">
+              <span class="c-red"></span>
+              <span class="c-yellow"></span>
+              <span class="c-green"></span>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-dark);">
+              asgard-engine ~ live-incident-stream
+            </span>
+            <span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--cyan);">
+              READY
+            </span>
+          </div>
+
+          <div id="terminal-logs" class="terminal-body">
+            <div class="log-entry log-cyan">[*] Piattaforma Asgard pronta. Telemetria in ascolto attivo.</div>
+            <div class="log-entry" style="color: var(--text-dark);">[i] Premi 'Avvia Simulazione SOC' per simulare un attacco reale.</div>
+          </div>
+
+          <div class="terminal-actions">
+            <button id="btn-run-simulation" class="btn-apple-primary" style="padding: 10px 24px; font-size: 0.88rem;">
+              ▶ Avvia Simulazione SOC
+            </button>
+            <span id="sim-status-text" style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">
+              Stato: In Attesa
+            </span>
+          </div>
+        </div>
+
+        <!-- Incident Inspector (Right) -->
+        <div class="inspector-card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="badge-tag b-ok" id="inc-state-pill">STANDBY</span>
+            <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dark);" id="inc-id-tag">ID: --</span>
+          </div>
+
+          <div>
+            <h3 style="font-size: 1.2rem; color: #fff; margin-bottom: 4px;" id="inc-title-display">Infrastruttura Protetta</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);" id="inc-desc-display">Nessuna minaccia attiva rilevata negli ultimi 60s.</p>
+          </div>
+
+          <div class="inspector-grid">
+            <div class="inspector-box">
+              <div class="inspector-lbl">IP Sorgente</div>
+              <div class="inspector-val" id="inc-src-ip">--</div>
+            </div>
+
+            <div class="inspector-box">
+              <div class="inspector-lbl">Host Bersaglio</div>
+              <div class="inspector-val" id="inc-target-host">--</div>
+            </div>
+
+            <div class="inspector-box">
+              <div class="inspector-lbl">Reputazione CTI (Fenrir)</div>
+              <div class="inspector-val" id="inc-cti-score">--</div>
+            </div>
+
+            <div class="inspector-box">
+              <div class="inspector-lbl">Stato Azione</div>
+              <div class="inspector-val" style="color: var(--emerald);" id="inc-action-status">--</div>
+            </div>
+          </div>
+
+          <div style="padding-top: 10px; border-top: 1px solid var(--glass-border);">
+            <div style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--text-dark); margin-bottom: 8px;">
+              TECNICA MITRE ATT&CK:
+            </div>
+            <div style="font-family: var(--font-mono); font-size: 0.82rem; color: var(--amber); background: var(--amber-dim); padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(245,158,11,0.25);" id="inc-mitre-tag">
+              T1110.001 - Password Guessing / Brute Force
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         APPLE-GRADE COMPLIANCE CALCULATOR (SEGMENTED CONTROLS)
+         ==================================================================== -->
+    <section id="calcolatore" class="section container">
+      <div class="section-eyebrow">RISK & SANCTION ESTIMATOR</div>
+      <h2 class="section-heading titanium-title">Calcola la tua Esposizione Normativa</h2>
+      <p class="section-sub">
+        La Direttiva NIS2 e il GDPR impongono requisiti stringenti. Verifica il livello di rischio della tua impresa.
+      </p>
+
+      <div class="calc-module">
+        <div class="calc-questions">
+          <!-- Q1: Company Size -->
+          <div class="calc-q-group">
+            <label>1. Dimensione / Categoria dell'Impresa:</label>
+            <div class="segmented-control" data-group="size">
+              <button class="seg-btn" data-val="micro">&lt; 10 Dipendenti</button>
+              <button class="seg-btn active" data-val="pmi">10 - 250 (PMI)</button>
+              <button class="seg-btn" data-val="large">&gt; 250 / Essenziale</button>
+            </div>
+          </div>
+
+          <!-- Q2: MFA Status -->
+          <div class="calc-q-group">
+            <label>2. Copertura Multi-Factor Authentication (MFA / 2FA):</label>
+            <div class="segmented-control" data-group="mfa">
+              <button class="seg-btn" data-val="none">Nessun MFA</button>
+              <button class="seg-btn active" data-val="partial">Parziale (Solo Email)</button>
+              <button class="seg-btn" data-val="all">Obbligatorio 100%</button>
+            </div>
+          </div>
+
+          <!-- Q3: AD Audit -->
+          <div class="calc-q-group">
+            <label>3. Ultimo Audit Active Directory / Microsoft 365:</label>
+            <div class="segmented-control" data-group="adaudit">
+              <button class="seg-btn active" data-val="never">Mai Eseguito</button>
+              <button class="seg-btn" data-val="old">&gt; 12 Mesi Fa</button>
+              <button class="seg-btn" data-val="recent">Regolare & Documentato</button>
+            </div>
+          </div>
+
+          <!-- Q4: IR Plan -->
+          <div class="calc-q-group">
+            <label>4. Piano di Gestione Incidenti & Backup Testati:</label>
+            <div class="segmented-control" data-group="irplan">
+              <button class="seg-btn active" data-val="no">Nessun Piano</button>
+              <button class="seg-btn" data-val="untested">Presente ma non testato</button>
+              <button class="seg-btn" data-val="tested">Documentato & Testato</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gauge Output Stage -->
+        <div class="calc-results-stage">
+          <div id="calc-score-circle" class="radial-gauge">
+            <div id="calc-score-val" class="gauge-num">35</div>
+            <div class="gauge-unit">/ 100 SCORE</div>
+          </div>
+
+          <div id="calc-score-status" style="font-family: var(--font-mono); font-weight: 700; font-size: 0.88rem; color: var(--rose); margin-bottom: 20px;">
+            RISCHIO CRITICO (NON CONFORME)
+          </div>
+
+          <div class="fine-warning-card">
+            <div style="font-size: 0.72rem; font-family: var(--font-mono); text-transform: uppercase; color: #fca5a5; margin-bottom: 4px;">
+              Massimale Sanzione NIS2 / GDPR:
+            </div>
+            <div id="calc-fine-amount" class="fine-val">Fino a 7.000.000 €</div>
+          </div>
+
+          <a href="#pricing" class="btn-apple-primary" style="width: 100%; justify-content: center;">
+            Metti in Sicurezza la tua Impresa
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         PRICING & LICENSING (ANNUAL/MONTHLY SWITCH)
+         ==================================================================== -->
+    <section id="pricing" class="section container">
+      <div class="section-eyebrow">PIANI TRASPARENTI A CANONE FLAT</div>
+      <h2 class="section-heading titanium-title">Investi nella Tranquillità della tua Azienda</h2>
+      <p class="section-sub">
+        Nessun costo nascosto per endpoint. Tutti i 9 moduli inclusi.
+      </p>
+
+      <!-- Billing Toggle Switcher -->
+      <div class="pricing-switcher">
+        <div class="billing-pill">
+          <button id="bill-monthly" class="bill-opt">Mensile</button>
+          <button id="bill-annual" class="bill-opt active">Annuale</button>
+        </div>
+        <span class="discount-badge">RISPARMI IL 20%</span>
+      </div>
+
+      <div class="pricing-grid">
+        <!-- Community -->
+        <div class="price-card">
+          <div class="price-tier-name">Community</div>
+          <div class="price-tagline">Ideale per ricercatori, studenti e laboratori di prova.</div>
+          <div class="price-amount-box">0 € <span>/ per sempre</span></div>
+
+          <ul class="price-features">
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Tutti i 9 moduli con licenza MIT</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Esecuzione locale / self-hosted</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> 478+ test unitari automatizzati</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Supporto community via GitHub</li>
+          </ul>
+
+          <button class="btn-price btn-price-secondary" onclick="window.open('https://github.com', '_blank')">
+            Accedi a GitHub
+          </button>
+        </div>
+
+        <!-- Business PMI (Featured) -->
+        <div class="price-card featured">
+          <div class="featured-ribbon">SCELTA PIÙ RICHIESTA</div>
+          <div class="price-tier-name">Business PMI</div>
+          <div class="price-tagline">Il SOC autonomo completo per aziende fino a 100 endpoint.</div>
+          <div class="price-amount-box" id="price-business">199 € <span id="period-business">/ mese (annuale)</span></div>
+
+          <ul class="price-features">
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Tutti i 9 moduli pronti all'uso</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Agente Windows nativo via GPO / Intune</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Audit continui AD & Microsoft 365</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Report PDF a norma NIS2, DORA e GDPR</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Allarmi istantanei su Teams e Telegram</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Onboarding guidato e supporto prioritario</li>
+          </ul>
+
+          <button class="btn-price btn-price-primary" onclick="openPilotModal('Business PMI')">
+            Attiva Prova Gratuita 30 Giorni
+          </button>
+        </div>
+
+        <!-- MSP Partner -->
+        <div class="price-card">
+          <div class="price-tier-name">MSP & Integrator</div>
+          <div class="price-tagline">Per società IT che offrono servizi di sicurezza gestita ai propri clienti.</div>
+          <div class="price-amount-box" id="price-msp">559 € <span id="period-msp">/ mese (annuale)</span></div>
+
+          <ul class="price-features">
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Licenza multi-tenant per clienti illimitati</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> White-Label (report con logo del partner)</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> API REST complete & Inoltro SIEM Syslog/CEF</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Margine di ricavo ricorrente garantito</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Formazione tecnica e supporto dedicato</li>
+          </ul>
+
+          <button class="btn-price btn-price-secondary" onclick="openPilotModal('MSP Partner')">
+            Diventa Partner Commerciale
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Luxury Multi-Column Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-nav-grid">
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+            <div class="brand-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            <span style="font-family: var(--font-display); font-weight: 700; color: #fff; font-size: 1.1rem;">ASGARD CYBER DEFENSE</span>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-dark); max-width: 320px; line-height: 1.6;">
+            La suite di cybersecurity Blue Team concepita per la sovranità del dato europeo, la semplicità operativa e la protezione autonoma delle imprese.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h5>I Guardiani</h5>
+          <ul>
+            <li><a href="#bento">Ragnarök (Core)</a></li>
+            <li><a href="#bento">Heimdall (HIDS)</a></li>
+            <li><a href="#bento">Yggdrasil (Identity)</a></li>
+            <li><a href="#bento">Mjolnir (Forensics)</a></li>
+            <li><a href="#bento">Sleipnir (SOAR)</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Conformità</h5>
+          <ul>
+            <li><a href="#calcolatore">Direttiva NIS2</a></li>
+            <li><a href="#calcolatore">Regolamento DORA</a></li>
+            <li><a href="#calcolatore">ISO/IEC 27001</a></li>
+            <li><a href="#calcolatore">GDPR Sicurezza</a></li>
+            <li><a href="#confronto">Matrice MITRE</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Risorse & B2B</h5>
+          <ul>
+            <li><a href="#pricing">Programma Pilota</a></li>
+            <li><a href="#pricing">Canale Partner MSP</a></li>
+            <li><a href="https://github.com" target="_blank">Codice GitHub</a></li>
+            <li><a href="#pricing">Accordo di Valutazione</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-legal-notice">
+        AVVISO LEGALE DI CONFORMITÀ: I moduli della suite Asgard (Heimdall, Mjolnir, Bifrost, Yggdrasil, Fenrir, Sleipnir, Forseti, Gjallarhorn, Ragnarök) sono destinati esclusivamente ad attività di monitoraggio, audit, risposta a incidenti e difesa su sistemi di cui si possiede esplicita autorizzazione scritta, ai sensi e per gli effetti dell'art. 615-ter del Codice Penale. L'autore e distributore declinano ogni responsabilità per usi impropri.
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

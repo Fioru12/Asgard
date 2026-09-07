@@ -1,0 +1,74 @@
+name: Asgard Security Suite - Automated CI Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test-suite:
+    name: Run Unit & Integration Tests (All 9 Modules)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Checkout Asgard Suite Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Suite Dependencies & Test Runners
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov PyYAML FastAPI uvicorn psutil ldap3 fpdf2
+
+      - name: Test Sleipnir (SOAR Engine)
+        run: |
+          cd Sleipnir
+          pytest -v
+
+      - name: Test Forseti (GDPR / NIS2 / DORA / ISO27001 Compliance)
+        run: |
+          cd Forseti
+          pytest -v
+
+      - name: Test Fenrir (Threat Intel & STIX 2.1)
+        run: |
+          cd Fenrir
+          pytest -v
+
+      - name: Test Heimdall (HIDS & Remote Agent)
+        run: |
+          cd Heimdall
+          pytest -v
+
+      - name: Test Bifrost (Network Scanner & CVE Correlation)
+        run: |
+          cd Bifrost
+          pytest -v
+
+      - name: Test Mjolnir (Forensic Triage & YARA Scanner)
+        run: |
+          cd Mjolnir
+          pytest -v
+
+      - name: Test Gjallarhorn (Alerting Hub & SIEM Exporter)
+        run: |
+          cd Gjallarhorn
+          pytest -v
+
+      - name: Test Yggdrasil (Active Directory Auditor)
+        run: |
+          cd Yggdrasil
+          pytest -v
+
+      - name: Test Ragnarök (Desktop & API Orchestrator)
+        run: |
+          cd Ragnarok
+          pytest backend/tests/ -v
