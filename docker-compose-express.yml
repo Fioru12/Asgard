@@ -27,7 +27,7 @@ services:
     image: asgard-suite:latest
     container_name: asgard-heimdall-express
     working_dir: /app/Heimdall
-    command: python main.py monitor
+    command: python main.py api --host 0.0.0.0 --port 8000
     environment:
       <<: *common-env
       HEIMDALL_API_KEY: ${RAGNAROK_API_KEY:-asgard-heimdall-express-key}
@@ -82,7 +82,7 @@ services:
       gjallarhorn-express:
         condition: service_healthy
     restart: unless-stopped
-        healthcheck:
+    healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
       interval: 30s
       timeout: 5s

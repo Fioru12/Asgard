@@ -66,21 +66,31 @@ Three functional groups:
 
 ---
 
-## The modules
+## The Modules
 
 | Module | What it does | Stack | Tests |
 |---|---|---|---|
-| [**Heimdall**](Heimdall) | Lightweight HIDS: detects brute-force in SSH/Windows logs, blocks IPs at the firewall level with a configurable TTL, notifies via Telegram/Gjallarhorn | Python, FastAPI, SQLite | 33 ✅ |
-| [**Mjolnir**](Mjolnir) | Automated forensic triage on a compromised host: process/network snapshots, hash lookups on VirusTotal (with caching and rate-limiting), Markdown/HTML reports | Python, psutil | 20 ✅ |
-| [**Bifrost**](Bifrost) | Multi-threaded network scanner with banner grabbing, GeoIP/WHOIS enrichment, encrypted reports (PBKDF2 + Fernet) | Python, FastAPI | 42 ✅ |
-| [**Yggdrasil**](Yggdrasil) | Active Directory security audit over real LDAP/LDAPS (read-only bind) or a simulated mode for demos | Python, ldap3 | 22 ✅ |
-| [**Fenrir**](Fenrir) | Public threat intelligence aggregator: CISA KEV always on, optional OTX, indexed in a local SQLite database | Python | 36 ✅ |
-| [**Sleipnir**](Sleipnir) | SOAR engine: runs YAML playbooks that orchestrate the other modules, with persistent state and an incident audit trail | Python, PyYAML | 24 ✅ |
-| [**Forseti**](Forseti) | GDPR/NIS2 compliance checker for SMBs: 25 real controls, scoring, report with gaps and concrete remediations | Python | 29 ✅ |
-| [**Gjallarhorn**](Gjallarhorn) | Centralized alerting hub (Telegram/webhook/SMTP/Teams/Jira/ServiceNow) with dedup and throttling, used by Heimdall and Sleipnir | Python, FastAPI | 50 ✅ |
-| [**Ragnarök**](Ragnarok) | Desktop orchestrator (Tauri + FastAPI) with an AI assistant, multi-user RBAC, security hardening, and mandatory human confirmation before every action | Tauri, Rust, Python | 128 ✅ |
+| [**Heimdall**](Heimdall) | Lightweight HIDS & Windows Agent: detects brute-force in SSH/Windows EventLog, blocks IPs at the firewall level with configurable TTL, notifies via Telegram/Gjallarhorn | Python, PowerShell, FastAPI, SQLite | 38 ✅ |
+| [**Mjolnir**](Mjolnir) | Automated forensic triage on a compromised host: process/network snapshots, hash lookups on VirusTotal (with caching and rate-limiting), Markdown/HTML reports | Python, psutil | 24 ✅ |
+| [**Bifrost**](Bifrost) | Multi-threaded network scanner with banner grabbing, GeoIP/WHOIS enrichment, LAN discovery, encrypted reports (PBKDF2 + Fernet) | Python, FastAPI | 44 ✅ |
+| [**Yggdrasil**](Yggdrasil) | Active Directory (LDAP/LDAPS) & Microsoft 365 / Entra ID cloud security posture audit (MFA enforcement, Global Admins, Legacy Auth) | Python, ldap3 | 27 ✅ |
+| [**Fenrir**](Fenrir) | Public threat intelligence aggregator: CISA KEV always on, optional OTX, STIX 2.1 exporter, local SQLite with stale lock protection | Python | 37 ✅ |
+| [**Sleipnir**](Sleipnir) | SOAR engine: runs YAML playbooks that orchestrate the other modules, with persistent state and an incident audit trail | Python, PyYAML | 26 ✅ |
+| [**Forseti**](Forseti) | GDPR/NIS2/DORA compliance checker for SMBs: 25 real controls, scoring, report with gaps and concrete remediations | Python | 31 ✅ |
+| [**Gjallarhorn**](Gjallarhorn) | Centralized alerting hub (Telegram/webhook/SMTP/Teams/Jira/ServiceNow) with dedup and throttling, used by Heimdall and Sleipnir | Python, FastAPI | 53 ✅ |
+| [**Ragnarök**](Ragnarok) | Desktop & Web SOC orchestrator (Tauri + FastAPI) with AI assistant (FastEmbed + ChromaDB), multi-user RBAC, and audit log | Tauri, Rust, Python | 96 ✅ |
 
-Every module is independent: clone it, install it, use it on its own. Sleipnir and Ragnarök are where the suite stops being "a collection of scripts" and becomes a system.
+---
+
+## Global Test Runner & Verification
+
+You can verify the entire 9-module suite using the unified test runner:
+
+```bash
+python run_suite_tests.py
+# Or verify a specific module:
+python run_suite_tests.py -m Heimdall
+```
 
 ---
 

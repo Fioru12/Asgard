@@ -43,12 +43,8 @@ read -rp "🔌 Qual è la porta SSH pubblica? [22]: " INPUT
 HEIMDALL_SSH_PORT="${INPUT:-22}"
 
 # Email aziendale per notifiche
-read -rp "📧 Inserisci l'email aziendale per le notifiche (lascia vuoto se non necessario): " INPUT
-GJALLARHORN_CONTACT_EMAIL="${INPUT:-admin@${HEIMDALL_SSH_PORT:-22}.com}"
-# Se è stato lasciato vuoto, usiamo un valore placeholder
-if [ -z "$GJALLARHORN_CONTACT_EMAIL" ]; then
-  GJALLARHORN_CONTACT_EMAIL="admin@azienda.local"
-fi
+read -rp "📧 Inserisci l'email aziendale per le notifiche (lascia vuoto per default: admin@azienda.local): " INPUT
+GJALLARHORN_CONTACT_EMAIL="${INPUT:-admin@azienda.local}"
 
 # Dominio aziendale
 read -rp "🌐 Inserisci il dominio aziendale (es. azienda.local) [localhost]: " INPUT
