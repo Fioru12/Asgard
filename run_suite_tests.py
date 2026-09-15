@@ -98,13 +98,21 @@ def run_suite(target_module: Optional[str] = None, verbose: bool = False) -> boo
         if verbose:
             cmd.append("-v")
 
-        proc = subprocess.run(
-            cmd,
-            cwd=root_dir,
-            capture_output=True,
-            text=True,
-            env=env
-        )
+        proc = None
+        for attempt in range(3):
+            try:
+                proc = subprocess.run(
+                    cmd,
+                    cwd=root_dir,
+                    capture_output=True,
+                    text=True,
+                    env=env
+                )
+                break
+            except PermissionError:
+                time.sleep(0.5)
+        if proc is None:
+            proc = subprocess.run(cmd, cwd=root_dir, capture_output=True, text=True, env=env)
         duration = time.time() - t0
 
         passed, warnings, summary = parse_pytest_output(proc.stdout)

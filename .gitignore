@@ -19,6 +19,8 @@ asgard-state/
 backend/backups/
 *.db
 *.sqlite3
+output/
+.heimdall_agent_id
 
 # Tauri / node
 node_modules/

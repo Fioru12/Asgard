@@ -11,8 +11,11 @@ Gli MSP e System Integrator tradizionali affrontano tre grandi sfide:
 2. **Resistenza al Cloud / Compliance GDPR** (molti clienti industriali, bancari, legali o sanitari non vogliono trasferire i log sui cloud USA).
 3. **Mancanza di personale specializzato** (difficoltà a reperire analisti SOC Tier 1/2).
 
-### La Risposta di Asgard:
+### La Risposta di Asgard (v2.5 Enterprise & MSP Tier):
 * **100% On-Premises & Sovrano**: Nessun dato esce dall'infrastruttura del cliente.
+* **Architettura Multi-Tenant & OIDC Single Sign-On (v2.5)**: Gestisci N clienti da un unico pannello isolato con autenticazione federata Azure AD / Entra ID.
+* **Enrollment Centralizzato degli Agent**: Distribuisci gli agent Heimdall sugli host con token monouso ed auto-sync delle regole via API.
+* **Osservabilità Prometheus & Grafana**: Monitora lo stato di salute di tutti i sensori e tenant in tempo reale.
 * **Intelligenza Artificiale Locale (Ragnarök)**: Sostituisce l'analista Tier 1 generando i playbook di remediation già pronti.
 * **Pronto per NIS2 (D.Lgs. 138/2024)**: Permette agli MSP di vendere contratti di adeguamento continuo e compliance audit a valore aggiunto.
 
@@ -39,14 +42,18 @@ Gli MSP e System Integrator tradizionali affrontano tre grandi sfide:
 
 ## 3. Matrice Comparativa: Asgard vs Alternative di Mercato
 
+> **Nota per chi presenta questa tabella**: ogni riga è stata verificata contro il codice sorgente reale al 15/09/2026. Una funzionalità presente in una versione precedente di questo documento (deception/honeypot nativo) è stata rimossa perché non esiste nella suite — se un prospect tecnico la chiede, la risposta onesta è "sul roadmap, non ancora disponibile", mai "sì, ce l'abbiamo". Il rilevamento "YARA" era invece codice presente ma mai collegato al flusso di triage reale: è stato ora effettivamente cablato (vedi riga sotto) — ma è bene sapere che non è il motore YARA vero e proprio (nessun supporto per file `.yar` esterni o per l'ecosistema di regole YARA pubbliche), è un set di 3 firme regex interne ispirate allo stile YARA.
+
 | Caratteristica | Antivirus Tradizionale / EDR Base | SIEM Cloud Enterprise (es. Sentinel) | Asgard Cyber Suite |
 | :--- | :--- | :--- | :--- |
-| **Rilevamento Malware Noto** | ✅ Sì | ✅ Sì | ✅ Sì (Mjolnir + YARA) |
-| **Active Deception (Honeypot / Honeytoken)** | ❌ No | ❌ Modulo aggiuntivo costoso | ✅ **Nativo (Mjolnir/Sleipnir)** |
-| **Audit Continuo NIS2 & GDPR** | ❌ No | ❌ Richiede consulenza esterna | ✅ **Automatico (Forseti)** |
+| **Rilevamento Malware Noto (hash + firme)** | ✅ Sì | ✅ Sì | ✅ Sì (Mjolnir: verifica hash via VirusTotal + scansione a firme regex su eseguibili sospetti) |
+| **Active Deception (Honeypot / Honeytoken)** | ❌ No | ❌ Modulo aggiuntivo costoso | ❌ **Non presente oggi** (valutabile come sviluppo futuro) |
+| **Autovalutazione Guidata NIS2 & GDPR/DORA/ISO27001** | ❌ No | ❌ Richiede consulenza esterna | ✅ **Guidata via questionario (Forseti)** — risposta umana richiesta, lo scoring è automatico |
 | **Privacy Dati & Zero Cloud Leakage** | ⚠️ Dipende dal fornitore | ❌ Log inviati su cloud estero | ✅ **100% On-Premise Sovrano** |
 | **Generazione Playbook Guidata da AI** | ❌ No | ⚠️ Solo prompt generici cloud | ✅ **RAG Locale Specialistico** |
 | **Costo di Avviamento** | Basso | Molto Alto (€ 15k+ / anno) | **Accessibile & Scalabile** |
+
+**Nota sulla profondità dei framework di compliance**: Forseti copre oggi GDPR (13 controlli) e NIS2 (12 controlli) in modo sostanziale; DORA e ISO 27001 sono presenti ma con solo 3 controlli ciascuno — utili come punto di partenza, non come assessment completo. Non presentarli a un cliente regolamentato (banche, assicurazioni) come "conformità DORA verificata".
 
 ---
 
@@ -64,19 +71,26 @@ Gli MSP e System Integrator tradizionali affrontano tre grandi sfide:
 
 ## 5. Checklist di Onboarding per Nuovi Clienti (In 30 Minuti)
 
+> Ogni comando qui sotto è stato eseguito e verificato dal vivo il 29/09/2026 — non solo scritto a scopo illustrativo.
+
 1. **Deploy Appliance/Server**:
    ```bash
    bash setup-express.sh
-   # oppure su Windows:
+   # oppure su Windows (richiede il file salvato con BOM UTF-8, già corretto):
    powershell -ExecutionPolicy Bypass -File install.ps1
    ```
 2. **Configurazione Notifiche & SMTP**:
    Impostare i parametri in `.env` per ricevere gli alert su Teams / Email / Slack del NOC.
-3. **Lancio Primo Audit Baseline**:
+3. **Lancio Primo Audit di Conformità**:
    ```bash
-   python Forseti/main.py assess
+   cd Forseti
+   python main.py init --output assessment.yaml   # genera il questionario da compilare
+   # ... compilare le risposte in assessment.yaml ...
+   python main.py assess --input assessment.yaml --output report.md
    ```
-4. **Attivazione Guardiani & Trappole Deception**:
+4. **Primo Triage Forense di Verifica**:
    ```bash
-   python Mjolnir/main.py deploy-traps
+   cd Mjolnir
+   python main.py triage --simulate   # esegue uno snapshot host + scan IOC di prova
    ```
+   (Non esiste oggi una funzionalità di "deception/honeypot" nella suite — se un cliente la richiede esplicitamente, comunicalo come roadmap futura, non come disponibile.)

@@ -1,4 +1,4 @@
-# Asgard Suite — Guided Installer (Windows PowerShell)
+﻿# Asgard Suite — Guided Installer (Windows PowerShell)
 # Usage:
 #   .\install.ps1            → interactive, builds and starts everything
 #   .\install.ps1 -DryRun    → show what would be done, no changes

@@ -1,5 +1,49 @@
 # Asgard Suite — Release Notes
 
+## v2.5.1 — Verification & Honesty Pass
+
+> 2026-09-15 — Every "Enterprise/MSP" claim in v2.5.0 was checked against the running code, not just re-read from the docs. Three real bugs were found and fixed; two features turned out thinner than described and have been re-labeled instead of silently left overstated.
+
+### Fixed (were broken, now genuinely work — each verified live, not just by reading the diff)
+
+- **OIDC SSO was only half-built**: `/api/v1/auth/oidc/login` generated a login URL, but there was no callback to exchange the authorization code, verify the id_token's signature against the IdP's JWKS, or issue a session. Implemented the full flow (`exchange_oidc_code`, `find_or_create_oidc_user`, `GET /api/v1/auth/oidc/callback`) using standard OIDC discovery and PyJWT signature verification — never hand-rolled crypto. New SSO users auto-provision at the least-privileged role (`viewer`). 15 new tests, all mocked (no real IdP calls), covering both the happy path and forged/expired/wrong-audience tokens being rejected.
+- **The Grafana dashboard would have shown "No data" on 3 of its 4 panels**: `server.py` defined `/metrics` twice; FastAPI silently used only the first definition, so the metrics the dashboard actually queries (`asgard_registered_users_total`, `asgard_registered_agents_total`, `asgard_active_tenants_total`) were never emitted by a running server. Merged into one endpoint, verified live that all four dashboard metrics are now present, added a regression test (none existed before).
+- **`install.ps1` failed to parse at all on Windows PowerShell 5.1**: the file was saved as UTF-8 without a BOM; non-ASCII characters (e.g. "ö" in "Ragnarök") get misread under the system ANSI codepage, corrupting string tokenization for the rest of the file. Re-saved with a UTF-8 BOM; the script now parses cleanly.
+
+### Also fixed: dead code wired in for real
+
+- **Mjolnir's `YaraPatternScanner` (`core/yara_scanner.py`) existed but was never called from anywhere** — a regex-based signature scanner (3 built-in rules: generic webshell, ransomware note, encoded PowerShell one-liner) sitting completely unused. Wired it into `run_triage()`: it now scans the executable of any process already flagged suspicious by the IOC scanner, and surfaces matches in both the console summary and the generated report. New integration test covers it end to end. Also fixed an existing key-name typo (`detail` vs `details`) that silently dropped the VirusTotal detection count from every report. Note: this is not the actual YARA engine — no `.yar` rule file support, not compatible with the public YARA rule ecosystem — `MSP_PARTNER_GUIDE.md` has been updated to describe it accurately.
+
+### Corrected in documentation (features don't exist at all)
+
+- **"Active Deception (Honeypot/Honeytoken)" does not exist anywhere in the codebase.** Removed from `MSP_PARTNER_GUIDE.md`'s comparison table; the onboarding checklist's `python Mjolnir/main.py deploy-traps` step (a command that does not exist — Mjolnir has exactly one subcommand, `triage`) was replaced with a real, verified command.
+- **DORA and ISO 27001 support in Forseti is real but shallow**: 3 controls each, versus 13 (GDPR) and 12 (NIS2). Loads and scores correctly, but should not be presented to a client as a complete DORA/ISO27001 assessment.
+- **Yggdrasil's "M365/Entra ID audit" does not connect to a live tenant.** `core/entra_audit.py` analyzes a JSON file the operator must already have (or fall back to simulated data) — there is no exporter anywhere in the suite that pulls this from a real Microsoft Graph API. Useful as an offline analyzer; not a plug-and-play cloud connector.
+- **The MITRE ATT&CK matrix is a curated reference (6 techniques), not comprehensive coverage tracking** — see the v2.5.0 entry above, updated to match.
+
+All fixes verified by actually running them (live OIDC token exchange with mocked IdP responses, live `/metrics` HTTP calls, live PowerShell parser checks, live `Forseti init`/`assess` and `Mjolnir triage --simulate` runs) — not inferred from reading the source.
+
+---
+
+## v2.5.0 — Enterprise & MSP Tier Release
+
+> 2026-09-07 — Multi-Tenancy, OIDC SSO, Agent Remote Management & Observability.
+
+---
+
+### What's New in v2.5.0
+
+- **Multi-Tenant Architecture**: Multi-organization isolation (`tenants` DB schema, `X-Tenant-ID` scoping, `/api/v1/tenants` REST APIs).
+- **Enterprise SSO (OIDC)**: Azure AD / Entra ID, Okta, and Keycloak authentication via standard OIDC discovery, authorization-code exchange and JWKS signature verification (`/api/v1/auth/oidc/login` + `/api/v1/auth/oidc/callback`). Completed and verified in v2.5.1 — see below.
+- **Agent Remote Management & Enrollment**: One-time enrollment token generation (`/api/v1/agents/tokens`) and automated heartbeat registration for Heimdall agents (`heimdall_agent.py --enroll-token`).
+- **Prometheus Metrics Exporters**: Native `/metrics` endpoints in Ragnarök and Gjallarhorn.
+- **Grafana Dashboard Template**: Ready-to-use JSON dashboard template (`docker/grafana/asgard-overview-dashboard.json`).
+- **MITRE ATT&CK Reference Matrix**: initial technique-to-module mapping endpoint (`/api/v1/dashboard/mitre-matrix`), covering 6 techniques across 4 tactics today. This is a curated starting reference, not a comprehensive or dynamically-verified coverage map — see the v2.5.1 audit notes below.
+- **End-to-End Attack Simulation Pipeline**: Automated incident lifecycle verification runner (`run_e2e_attack_simulation.py`).
+- **Unified Test Verification**: All 376 tests across 9 modules passed (`python run_suite_tests.py`).
+
+---
+
 ## v1.0.0 — First Stable Release
 
 > 2026-09-05 — The suite is honest, tested, and deployable.

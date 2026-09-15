@@ -49,7 +49,7 @@ def build_package():
     dist_dir = os.path.join(root_dir, "dist")
     os.makedirs(dist_dir, exist_ok=True)
 
-    version = "2.4.0"
+    version = "2.5.0"
     zip_name = f"Asgard_Cyber_Suite_v{version}_Production_Release.zip"
     zip_path = os.path.join(dist_dir, zip_name)
 
