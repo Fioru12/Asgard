@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initSegmentedCalculator();
   initBillingSwitcher();
   initDualViewSimulation();
-  initFleetTelemetry();
 });
 
 // ---------------------------------------------------------------------------
@@ -329,22 +328,7 @@ function initDualViewSimulation() {
 }
 
 // ---------------------------------------------------------------------------
-// 4. Subtle Fleet Telemetry Variation
-// ---------------------------------------------------------------------------
-function initFleetTelemetry() {
-  const epStat = document.getElementById('stat-endpoints');
-  if (!epStat) return;
-
-  let count = 48;
-  setInterval(() => {
-    const delta = Math.random() > 0.65 ? (Math.random() > 0.5 ? 1 : -1) : 0;
-    count = Math.max(46, Math.min(52, count + delta));
-    epStat.textContent = count;
-  }, 4500);
-}
-
-// ---------------------------------------------------------------------------
-// 5. Pilot Modal Request Trigger
+// 4. Pilot Modal Request Trigger
 // ---------------------------------------------------------------------------
 function openPilotModal(planName) {
   const message = `Richiesta Programma Pilota 30 Giorni per "${planName}"\n\n` +
