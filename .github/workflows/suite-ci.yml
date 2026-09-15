@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout Asgard Suite Repository
         uses: actions/checkout@v4
+        with:
+          submodules: true
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -24,9 +26,20 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install Suite Dependencies & Test Runners
+        # Each module pins its own requirements.txt (Bifrost needs
+        # cryptography, Ragnarok needs PyJWT/chromadb, Forseti needs
+        # python-multipart for its web UI, etc.) - a single hand-maintained
+        # dependency list here always drifts out of sync with those, so
+        # install every module's real requirements instead of guessing.
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-cov PyYAML FastAPI uvicorn psutil ldap3 fpdf2
+          pip install pytest pytest-cov
+          for req in */requirements.txt Ragnarok/backend/requirements.txt Ragnarok/backend/requirements-rag.txt; do
+            if [ -f "$req" ]; then
+              echo "Installing $req"
+              pip install -r "$req"
+            fi
+          done
 
       - name: Test Sleipnir (SOAR Engine)
         run: |
@@ -69,6 +82,11 @@ jobs:
           pytest -v
 
       - name: Test Ragnarök (Desktop & API Orchestrator)
+        # Two separate invocations: tests/ and backend/tests/ both import
+        # server.py/auth.py at module scope with process-wide side effects,
+        # and running them in one pytest process leaks state between them
+        # (see Ragnarok's own CI workflow for the same fix in more detail).
         run: |
           cd Ragnarok
+          pytest tests/ -v
           pytest backend/tests/ -v

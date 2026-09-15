@@ -1,0 +1,27 @@
+[submodule "Heimdall"]
+	path = Heimdall
+	url = https://github.com/Fioru12/Heimdall.git
+[submodule "Mjolnir"]
+	path = Mjolnir
+	url = https://github.com/Fioru12/Mjolnir.git
+[submodule "Bifrost"]
+	path = Bifrost
+	url = https://github.com/Fioru12/Bifrost.git
+[submodule "Yggdrasil"]
+	path = Yggdrasil
+	url = https://github.com/Fioru12/Yggdrasil.git
+[submodule "Fenrir"]
+	path = Fenrir
+	url = https://github.com/Fioru12/Fenrir.git
+[submodule "Sleipnir"]
+	path = Sleipnir
+	url = https://github.com/Fioru12/Sleipnir.git
+[submodule "Forseti"]
+	path = Forseti
+	url = https://github.com/Fioru12/Forseti.git
+[submodule "Gjallarhorn"]
+	path = Gjallarhorn
+	url = https://github.com/Fioru12/Gjallarhorn.git
+[submodule "Ragnarok"]
+	path = Ragnarok
+	url = https://github.com/Fioru12/Ragnarok.git
