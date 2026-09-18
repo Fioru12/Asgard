@@ -17,8 +17,8 @@
 > Con l'entrata in vigore della direttiva **NIS2 (D.Lgs. 138/2024)** e l'aumento degli attacchi ransomware alle PMI, molti clienti chiedono servizi di SOC e audit continuo di conformità. I SIEM enterprise tradizionali (come Sentinel o Splunk), però, hanno costi proibitivi per le piccole-medie imprese e richiedono team dedicati 24/7.
 >
 > Abbiamo sviluppato **Asgard Cyber Suite**, una piattaforma SOC 100% On-Premise e Sovrana, pensata specificamente per consentire agli MSP di erogare ai propri clienti:
-> 1. **Audit continuo di Conformità NIS2 & GDPR** con report automatici pronti da allegare ai contratti.
-> 2. **Difesa attiva con trappole Deception/Honeypot** per catturare gli intrusi prima che tocchino i dati aziendali.
+> 1. **Autovalutazione guidata di Conformità NIS2 & GDPR/DORA/ISO27001** (Forseti) con report PDF pronti da allegare ai contratti.
+> 2. **Rilevamento intrusioni e risposta automatizzata** (Heimdall + Sleipnir): blocco IP su brute-force, playbook SOAR coordinati tra i moduli.
 > 3. **AI locale integrata (RAG)** che genera i playbook di risoluzione tecnica passo-passo per i vostri tecnici.
 >
 > Vi andrebbe di fare una call di 10 minuti o attivare un **accesso pilota gratuito di 30 giorni** per testarlo internamente nel vostro laboratorio?
@@ -57,4 +57,4 @@
 ## 🎯 Target 3: Messaggio Rapido WhatsApp / LinkedIn InMail
 *Da usare per contatti diretti, colleghi o titolari di aziende con cui si ha un rapporto informale.*
 
-> *«Ciao [Nome], ti scrivo al volo: abbiamo rilasciato una suite di sicurezza (Asgard) che fa l'audit continuo NIS2/GDPR e posiziona trappole intelligenti anti-ransomware sulla rete interna. Gira al 100% in locale senza mandare dati sul cloud. Stiamo facendo provare un assessment gratuito di 30 giorni ad alcune aziende selezionate. Se ti va di darci un'occhiata per la tua azienda o per i tuoi clienti, ti giro la scheda tecnica di 1 pagina!»*
+> *«Ciao [Nome], ti scrivo al volo: abbiamo rilasciato una suite di sicurezza (Asgard) che fa l'autovalutazione guidata NIS2/GDPR e rileva/blocca automaticamente i tentativi di intrusione sulla rete interna. Gira al 100% in locale senza mandare dati sul cloud. Stiamo facendo provare un assessment gratuito di 30 giorni ad alcune aziende selezionate. Se ti va di darci un'occhiata per la tua azienda o per i tuoi clienti, ti giro la scheda tecnica di 1 pagina!»*
