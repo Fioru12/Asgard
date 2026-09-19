@@ -60,6 +60,23 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host "[1/5] Docker OK" -ForegroundColor Green
 
+# --- Submodule check ---
+# The 9 module directories are git submodules; a plain "git clone" (without
+# --recursive) leaves them as empty folders, which breaks the Docker build
+# with a confusing "no such file" error. Detect and self-heal instead of
+# letting that happen.
+if (-not (Test-Path "Heimdall\main.py")) {
+    Write-Host "[i] Module submodules look empty -- fetching them now..." -ForegroundColor Yellow
+    if (Test-Path ".git") {
+        git submodule update --init --recursive
+    } else {
+        Write-Host "ERROR: Heimdall\main.py not found and this isn't a git checkout," -ForegroundColor Red
+        Write-Host "so submodules can't be fetched automatically. Re-clone with:"
+        Write-Host "  git clone --recursive https://github.com/Fioru12/Asgard.git"
+        exit 1
+    }
+}
+
 # --- Build image ---
 Write-Host "[2/5] Building asgard-suite image (this may take a few minutes)..."
 Run-Command { docker compose -f $ComposeFile -p $ProjectName build --no-cache }

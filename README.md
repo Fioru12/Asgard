@@ -98,10 +98,17 @@ python run_suite_tests.py -m Heimdall
 
 ## Quick Start (Docker — Full Suite)
 
+The 9 modules are git submodules, not plain folders — clone with `--recursive`,
+or the module directories will be empty and both the Docker build and
+`install.sh`/`install.ps1` will fail.
+
 ```bash
-# Clone the repository
-git clone https://github.com/Fioru12/Asgard.git
+# Clone the repository AND its 9 module submodules in one step
+git clone --recursive https://github.com/Fioru12/Asgard.git
 cd Asgard
+
+# Already cloned without --recursive? Fetch the submodules now:
+# git submodule update --init --recursive
 
 # Build and start all 9 modules with one command:
 ./install.sh            # Linux / macOS / Git Bash
