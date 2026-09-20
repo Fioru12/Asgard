@@ -75,7 +75,7 @@ Tre gruppi funzionali:
 | [**Heimdall**](Heimdall) | HIDS leggero & Windows Agent: rileva brute-force nei log SSH/Windows EventLog, blocca IP a livello firewall con TTL configurabile, notifica via Telegram/Gjallarhorn | Python, PowerShell, FastAPI, SQLite | 38 ✅ |
 | [**Mjolnir**](Mjolnir) | Triage forense automatico su host compromesso: snapshot processi/rete, verifica hash su VirusTotal (con cache e rate-limiting), report Markdown/HTML | Python, psutil | 24 ✅ |
 | [**Bifrost**](Bifrost) | Scanner di rete multi-thread con banner grabbing, arricchimento GeoIP/WHOIS, LAN discovery, report cifrati (PBKDF2 + Fernet) | Python, FastAPI | 44 ✅ |
-| [**Yggdrasil**](Yggdrasil) | Audit di sicurezza Active Directory (LDAP/LDAPS) e Cloud Microsoft 365 / Entra ID (MFA posture, Global Admins, Legacy Auth) | Python, ldap3 | 27 ✅ |
+| [**Yggdrasil**](Yggdrasil) | Audit di sicurezza Active Directory (LDAP/LDAPS) e Cloud Microsoft 365 / Entra ID (MFA posture, Global Admins, Legacy Auth) via Microsoft Graph API reale (app-only OAuth2) o export JSON | Python, ldap3, msal | 43 ✅ |
 | [**Fenrir**](Fenrir) | Aggregatore di threat intelligence pubblica: CISA KEV sempre attivo, OTX opzionale, esportazione STIX 2.1, SQLite con lock protection | Python | 37 ✅ |
 | [**Sleipnir**](Sleipnir) | Motore SOAR: esegue playbook YAML che orchestrano gli altri moduli, con stato persistente e audit trail dell'incidente | Python, PyYAML | 26 ✅ |
 | [**Forseti**](Forseti) | Compliance checker GDPR/NIS2/DORA per PMI: 25 controlli reali, scoring, report con gap e remediation concrete | Python | 31 ✅ |
