@@ -21,7 +21,7 @@ Il pattern comune: il README prometteva sempre più di quanto il codice facesse 
 
 Ho passato la sessione successiva a chiudere quella distanza, modulo per modulo. Poi ho aggiunto due tasselli che mancavano — un compliance checker GDPR/NIS2 per PMI (Forseti) e un hub di notifiche centralizzato (Gjallarhorn) — con lo stesso criterio: se non è testato, non esiste.
 
-Oggi: 9 moduli, oltre 300 test automatici, CI verde su ogni repository.
+Oggi: 9 moduli, oltre 600 test automatici, CI verde su ogni repository.
 
 La lezione più utile non è tecnica. È che un progetto "quasi finito" e uno "finito" si distinguono da una sola domanda: *l'ho verificato davvero, o mi sono fidato di come suonava?*
 
@@ -81,7 +81,7 @@ Poi ho aggiunto quello che mancava per davvero, non per completezza estetica: **
 
 ### Il numero che conta
 
-Oggi la suite conta 9 moduli, oltre 300 test automatici, pipeline CI verdi su ogni singolo repository — verificate, non dichiarate.
+Oggi la suite conta 9 moduli, oltre 600 test automatici, pipeline CI verdi su ogni singolo repository — verificate, non dichiarate.
 
 Ma il vero risultato di questo esercizio non è il numero di test. È aver reso ripetibile una domanda che prima non mi ponevo abbastanza spesso: *questo funziona davvero, o suona solo bene?*
 

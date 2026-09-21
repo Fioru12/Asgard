@@ -23,6 +23,7 @@ IGNORE_DIRS = {
     ".benchmarks",
     "output",
     "reports",
+    "test_reports",
     "incidents",
     "target",
 }
@@ -49,7 +50,7 @@ def build_package():
     dist_dir = os.path.join(root_dir, "dist")
     os.makedirs(dist_dir, exist_ok=True)
 
-    version = "2.5.0"
+    version = "2.5.1"
     zip_name = f"Asgard_Cyber_Suite_v{version}_Production_Release.zip"
     zip_path = os.path.join(dist_dir, zip_name)
 
@@ -80,6 +81,12 @@ def build_package():
 
                 # Skip root temp / git files
                 if rel_path.startswith(".") and not rel_path.startswith(".env.example"):
+                    continue
+
+                # Never ship local secrets: only template env files go out.
+                # (e.g. Ragnarok/backend/asgard_setup.env holds real API keys
+                # written by the setup wizard.)
+                if file.endswith(".env") and file != ".env.example" and not file.endswith(".env.example"):
                     continue
 
                 zf.write(full_path, arcname=os.path.join(f"Asgard_Suite_v{version}", rel_path))

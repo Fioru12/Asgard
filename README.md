@@ -78,7 +78,7 @@ Tre gruppi funzionali:
 | [**Yggdrasil**](Yggdrasil) | Audit di sicurezza Active Directory (LDAP/LDAPS) e Cloud Microsoft 365 / Entra ID (MFA posture, Global Admins, Legacy Auth) via Microsoft Graph API reale (app-only OAuth2) o export JSON | Python, ldap3, msal | 54 ✅ |
 | [**Fenrir**](Fenrir) | Aggregatore di threat intelligence pubblica: CISA KEV sempre attivo, OTX opzionale, esportazione STIX 2.1, SQLite con lock protection | Python | 48 ✅ |
 | [**Sleipnir**](Sleipnir) | Motore SOAR: esegue playbook YAML che orchestrano gli altri moduli, con stato persistente e audit trail dell'incidente | Python, PyYAML | 32 ✅ |
-| [**Forseti**](Forseti) | Compliance checker GDPR/NIS2/DORA/ISO27001 per PMI: 31 controlli reali (13 GDPR + 12 NIS2 + 3 DORA + 3 ISO27001), scoring, report con gap e remediation concrete | Python | 44 ✅ |
+| [**Forseti**](Forseti) | Compliance checker GDPR/NIS2/DORA/ISO27001 per PMI: 41 controlli reali (13 GDPR + 12 NIS2 + 8 DORA + 8 ISO27001), scoring, report con gap e remediation concrete | Python | 44 ✅ |
 | [**Gjallarhorn**](Gjallarhorn) | Hub di alerting centralizzato (Telegram/webhook/SMTP/Teams/Jira/ServiceNow) con dedup e throttling, usato da Heimdall e Sleipnir | Python, FastAPI | 63 ✅ |
 | [**Ragnarök**](Ragnarok) | Desktop & Web orchestrator (Tauri + FastAPI) con assistente AI (FastEmbed + ChromaDB), RBAC multi-utente, security hardening e audit log | Tauri, Rust, Python | 264 ✅ |
 
