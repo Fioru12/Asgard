@@ -19,7 +19,7 @@ import sys
 import time
 import argparse
 import subprocess
-from typing import List, Dict, Tuple, Optional
+from typing import Tuple, Optional
 
 if hasattr(sys.stdout, "reconfigure"):
     try:
@@ -117,7 +117,6 @@ def run_suite(target_module: Optional[str] = None, verbose: bool = False) -> boo
     start_total = time.time()
 
     for name, desc, test_path in modules_to_run:
-        full_test_path = os.path.join(root_dir, test_path)
         print(f"[{CYAN}RUNNING{RESET}] {BOLD}{name:12}{RESET} ({desc}) ... ", end="", flush=True)
 
         t0 = time.time()

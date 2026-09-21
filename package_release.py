@@ -8,7 +8,6 @@ Generates a SHA-256 integrity checksum manifest.
 """
 
 import os
-import sys
 import zipfile
 import hashlib
 import time
