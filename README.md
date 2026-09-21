@@ -84,6 +84,15 @@ Tre gruppi funzionali:
 
 ---
 
+## Screenshot (dal vivo, `http://localhost:8080`)
+
+| Console SOC | Dashboard RAG | Security Audit |
+|---|---|---|
+| ![Console SOC](docs/screenshots/console.png) | ![Dashboard RAG](docs/screenshots/rag-dashboard.png) | ![Security Audit](docs/screenshots/security-audit.png) |
+| 6/6 moduli online, stato in una frase | Score, timeline, ricerca semantica | Audit on-demand, export report |
+
+---
+
 ## Esecuzione e Verifica Automatica dell'Intera Suite
 
 Puoi verificare l'intera suite con il test runner unificato:

@@ -82,6 +82,15 @@ Three functional groups:
 
 ---
 
+## Screenshots (live, `http://localhost:8080`)
+
+| SOC Console | RAG Dashboard | Security Audit |
+|---|---|---|
+| ![SOC Console](docs/screenshots/console.png) | ![RAG Dashboard](docs/screenshots/rag-dashboard.png) | ![Security Audit](docs/screenshots/security-audit.png) |
+| 6/6 modules online, status in one sentence | Score, timeline, semantic search | On-demand audit, report export |
+
+---
+
 ## Global Test Runner & Verification
 
 You can verify the entire 9-module suite using the unified test runner:
