@@ -69,20 +69,29 @@ def check_local_dev_deps() -> None:
         print(f"{YELLOW}       Fix: .venv/Scripts/pip install {' '.join(missing)}{RESET}")
         print(f"{YELLOW}       (Docker/CI non sono affetti: installano già tutti i requirements.txt){RESET}\n")
 
-def parse_pytest_output(stdout: str) -> Tuple[int, int, str]:
-    """Extract passed test count, warning count, and last summary line."""
+def parse_pytest_output(stdout: str) -> Tuple[int, int, int, str]:
+    """Extract passed count, failed+error count, warning count, and last summary line.
+
+    Failed and collection errors are reported separately from passed so a red
+    run never shows a misleading partial "N test" figure without its failures.
+    """
     lines = stdout.strip().split("\n")
     last_line = lines[-1] if lines else "No output"
     passed = 0
+    failed = 0
     warnings = 0
     import re
     passed_match = re.search(r"(\d+)\s+passed", last_line)
     if passed_match:
         passed = int(passed_match.group(1))
+    for pattern in (r"(\d+)\s+failed", r"(\d+)\s+error"):
+        m = re.search(pattern, last_line)
+        if m:
+            failed += int(m.group(1))
     warn_match = re.search(r"(\d+)\s+warning", last_line)
     if warn_match:
         warnings = int(warn_match.group(1))
-    return passed, warnings, last_line
+    return passed, failed, warnings, last_line
 
 def run_suite(target_module: Optional[str] = None, verbose: bool = False) -> bool:
     root_dir = os.path.dirname(os.path.abspath(__file__))
@@ -137,16 +146,16 @@ def run_suite(target_module: Optional[str] = None, verbose: bool = False) -> boo
             proc = subprocess.run(cmd, cwd=root_dir, capture_output=True, text=True, env=env)
         duration = time.time() - t0
 
-        passed, warnings, summary = parse_pytest_output(proc.stdout)
+        passed, failed, warnings, summary = parse_pytest_output(proc.stdout)
         success = (proc.returncode == 0)
 
         if success:
             print(f"{GREEN}{BOLD}PASSED{RESET} ({passed} test in {duration:.2f}s)")
-            results.append((name, desc, True, passed, warnings, duration, None))
+            results.append((name, desc, True, passed, failed, warnings, duration, None))
         else:
-            print(f"{RED}{BOLD}FAILED{RESET} (in {duration:.2f}s)")
+            print(f"{RED}{BOLD}FAILED{RESET} ({passed} passed, {failed} failed in {duration:.2f}s)")
             err_msg = proc.stderr or proc.stdout
-            results.append((name, desc, False, passed, warnings, duration, err_msg))
+            results.append((name, desc, False, passed, failed, warnings, duration, err_msg))
 
     total_time = time.time() - start_total
 
@@ -160,12 +169,13 @@ def run_suite(target_module: Optional[str] = None, verbose: bool = False) -> boo
     total_tests = 0
     all_passed = True
 
-    for name, desc, ok, count, warns, dur, err in results:
+    for name, desc, ok, count, failed, warns, dur, err in results:
         status_str = f"{GREEN}PASS{RESET}" if ok else f"{RED}FAIL{RESET}"
         if not ok:
             all_passed = False
         total_tests += count
-        print(f" {BOLD}{name:<14}{RESET} {desc:<32} {status_str:<19} {count:<8} {dur:.2f}s")
+        tests_cell = f"{count}" if ok else f"{count} (-{failed})"
+        print(f" {BOLD}{name:<14}{RESET} {desc:<32} {status_str:<19} {tests_cell:<8} {dur:.2f}s")
 
     print(f"{CYAN}" + "-" * 75 + f"{RESET}")
     status_banner = f"{GREEN}{BOLD}ALL TESTS PASSED (100% OPERATIONAL){RESET}" if all_passed else f"{RED}{BOLD}SOME TESTS FAILED{RESET}"
@@ -176,7 +186,7 @@ def run_suite(target_module: Optional[str] = None, verbose: bool = False) -> boo
     # If any failures, print details
     if not all_passed:
         print(f"{RED}{BOLD}Detailed Failure Logs:{RESET}")
-        for name, desc, ok, count, warns, dur, err in results:
+        for name, desc, ok, count, failed, warns, dur, err in results:
             if not ok and err:
                 print(f"\n{RED}--- {name} Failure ---{RESET}\n{err}\n")
 
