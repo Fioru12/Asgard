@@ -18,9 +18,9 @@
 ### Giorno 1-2: Avvia Ragnarök
 
 ```bash
-git clone https://github.com/Fioru12/Asgard.git
-cd Asgard/Ragnarök/backend
-pip install -r requirements.txt
+git clone --recursive https://github.com/Fioru12/Asgard.git
+cd Asgard/Ragnarok/backend
+pip install -r requirements.txt -r requirements-rag.txt
 python server.py
 ```
 
@@ -28,7 +28,7 @@ Annota la password admin stampata in console.
 
 ### Giorno 3: Rivendica l'admin
 
-Vai su `http://localhost:8000/dashboard` → banner "Configurazione iniziale" → inserisci console password + nuovo username + nuova password (min 8 caratteri).
+Vai su `http://localhost:8080/dashboard` → banner "Configurazione iniziale" → inserisci console password + nuovo username + nuova password (min 8 caratteri).
 
 ### Giorno 4-5: Crea il team
 
@@ -39,7 +39,7 @@ Vai su `http://localhost:8000/dashboard` → banner "Configurazione iniziale" �
 | Junior | `viewer` | Solo lettura |
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/auth/users \
+curl -X POST http://localhost:8080/api/v1/auth/users \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{"username":"collega","password":"Pass123!","role":"analyst"}'
@@ -59,7 +59,7 @@ curl -X POST http://localhost:8000/api/v1/auth/users \
 
 ```bash
 cd ../../Heimdall && pip install -r requirements.txt
-python main.py --test-alert
+python main.py simulate
 ```
 Verifica: dashboard → timeline → alert.
 
@@ -67,7 +67,7 @@ Verifica: dashboard → timeline → alert.
 
 ```bash
 cd ../Bifrost && pip install -r requirements.txt
-python main.py --target 192.168.1.0/24 --scan-type banner
+python main.py discover 192.168.1.0/24
 ```
 
 ### Giorno 13-14: Fenrir (threat intel)
@@ -132,17 +132,18 @@ ASGARD_TLS=true ASGARD_TLS_CERTFILE=/etc/ssl/certs/ragnarok.pem ASGARD_TLS_KEYFI
 ### Giorno 25-26: Backup
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/backup \
+curl -X POST http://localhost:8080/api/v1/backup \
   -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \
-  -d '{"path":"/backup/asgard/nightly.zip"}'
+  -H "Content-Type: application/json"
 ```
 
 ### Giorno 27-28: Compliance
 
 ```bash
 cd ../Forseti
-python main.py --report  # GDPR/NIS2
+python main.py init --output assessment.yaml
+# compila assessment.yaml, poi:
+python main.py assess --input assessment.yaml  # GDPR/NIS2/DORA/ISO27001
 ```
 
 ### Giorno 29-30: Handover
