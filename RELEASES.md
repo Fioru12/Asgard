@@ -19,7 +19,7 @@
 - **"Active Deception (Honeypot/Honeytoken)" does not exist anywhere in the codebase.** Removed from `MSP_PARTNER_GUIDE.md`'s comparison table; the onboarding checklist's `python Mjolnir/main.py deploy-traps` step (a command that does not exist — Mjolnir has exactly one subcommand, `triage`) was replaced with a real, verified command.
 - **DORA and ISO 27001 support in Forseti is real but shallow**: 3 controls each, versus 13 (GDPR) and 12 (NIS2). Loads and scores correctly, but should not be presented to a client as a complete DORA/ISO27001 assessment.
 - **Yggdrasil's "M365/Entra ID audit" does not connect to a live tenant.** `core/entra_audit.py` analyzes a JSON file the operator must already have (or fall back to simulated data) — there is no exporter anywhere in the suite that pulls this from a real Microsoft Graph API. Useful as an offline analyzer; not a plug-and-play cloud connector.
-- **The MITRE ATT&CK matrix is a curated reference (6 techniques), not comprehensive coverage tracking** — see the v2.5.0 entry above, updated to match.
+- **The MITRE ATT&CK matrix is a curated reference (18 techniques across 9 tactics), not comprehensive coverage tracking** — see the v2.5.0 entry above, updated to match.
 
 All fixes verified by actually running them (live OIDC token exchange with mocked IdP responses, live `/metrics` HTTP calls, live PowerShell parser checks, live `Forseti init`/`assess` and `Mjolnir triage --simulate` runs) — not inferred from reading the source.
 

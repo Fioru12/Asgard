@@ -48,6 +48,26 @@ MODULE_DEFINITIONS = [
     ("Ragnarok", "AI SOC Orchestrator & RAG", "Ragnarok/backend/tests"),
 ]
 
+def check_local_dev_deps() -> None:
+    """Pre-flight check for local (non-Docker) runs.
+
+    Docker and CI install every module's requirements.txt automatically,
+    but a local .venv created before a new dependency was added (e.g. msal
+    for Yggdrasil's live Graph connector, yara-python for Mjolnir) fails
+    with cryptic per-module errors. Warn early with the exact fix instead.
+    Never blocks execution — CI/Docker already have everything.
+    """
+    missing = []
+    for import_name, pip_name in (("msal", "msal"), ("yara", "yara-python")):
+        try:
+            __import__(import_name)
+        except ImportError:
+            missing.append(pip_name)
+    if missing:
+        print(f"{YELLOW}[WARN] Dipendenze locali mancanti: {', '.join(missing)}{RESET}")
+        print(f"{YELLOW}       Fix: .venv/Scripts/pip install {' '.join(missing)}{RESET}")
+        print(f"{YELLOW}       (Docker/CI non sono affetti: installano già tutti i requirements.txt){RESET}\n")
+
 def parse_pytest_output(stdout: str) -> Tuple[int, int, str]:
     """Extract passed test count, warning count, and last summary line."""
     lines = stdout.strip().split("\n")
@@ -65,6 +85,7 @@ def parse_pytest_output(stdout: str) -> Tuple[int, int, str]:
 
 def run_suite(target_module: Optional[str] = None, verbose: bool = False) -> bool:
     root_dir = os.path.dirname(os.path.abspath(__file__))
+    check_local_dev_deps()
     
     print(f"{CYAN}{BOLD}" + "=" * 75 + f"{RESET}")
     print(f"{CYAN}{BOLD}  🛡️  ASGARD CYBER SUITE — GLOBAL VERIFICATION TEST RUNNER v2.4.0{RESET}")
@@ -160,11 +181,49 @@ def run_suite(target_module: Optional[str] = None, verbose: bool = False) -> boo
 
     return all_passed
 
+def install_all_requirements() -> bool:
+    """Installa tutte le dipendenze dei 9 moduli nel Python corrente.
+
+    Replica la logica di CI (.github/workflows/suite-ci.yml) e Dockerfile:
+    ogni modulo è padrone del suo requirements.txt, qui li installiamo tutti
+    in un comando solo. È il fix strutturale al bug di oggi (venv locale
+    senza msal/yara-python mentre Docker/CI erano verdi).
+    Uso: python run_suite_tests.py --setup
+    """
+    import glob
+    root_dir = os.path.dirname(os.path.abspath(__file__))
+    req_files = sorted(glob.glob(os.path.join(root_dir, "*", "requirements.txt")))
+    for extra in ("Ragnarok/backend/requirements.txt", "Ragnarok/backend/requirements-rag.txt"):
+        full = os.path.join(root_dir, extra)
+        if full not in req_files and os.path.isfile(full):
+            req_files.append(full)
+    ok = True
+    for req in req_files:
+        rel = os.path.relpath(req, root_dir)
+        print(f"[SETUP] pip install -r {rel} ... ", end="", flush=True)
+        proc = subprocess.run(
+            [sys.executable, "-m", "pip", "install", "-r", req],
+            cwd=root_dir,
+            capture_output=True,
+            text=True,
+        )
+        if proc.returncode == 0:
+            print(f"{GREEN}OK{RESET}")
+        else:
+            ok = False
+            print(f"{RED}FAILED{RESET}\n{proc.stderr or proc.stdout}")
+    return ok
+
 def main():
     parser = argparse.ArgumentParser(description="Asgard Cyber Suite - Global Test Runner")
     parser.add_argument("--module", "-m", help="Run tests only for a specific module (e.g. Heimdall, Yggdrasil)")
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose test execution output")
+    parser.add_argument("--setup", action="store_true", help="Install all module requirements into the current Python env, then exit")
     args = parser.parse_args()
+
+    if args.setup:
+        success = install_all_requirements()
+        sys.exit(0 if success else 1)
 
     success = run_suite(target_module=args.module, verbose=args.verbose)
     sys.exit(0 if success else 1)

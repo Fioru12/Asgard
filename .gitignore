@@ -20,6 +20,8 @@ backend/backups/
 *.db
 *.sqlite3
 output/
+reports/
+test_reports/
 .heimdall_agent_id
 
 # Tauri / node

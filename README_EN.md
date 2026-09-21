@@ -5,7 +5,7 @@
 ### Blue Team Security Suite — 9 modules, one principle: if it isn't tested, it doesn't exist.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Tests](https://img.shields.io/badge/Test-300%2B%20passing-2ea44f?style=for-the-badge)
+![Tests](https://img.shields.io/badge/Test-500%2B%20passing-2ea44f?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)
 
 [🇮🇹 Versione italiana](README.md)
@@ -71,14 +71,14 @@ Three functional groups:
 | Module | What it does | Stack | Tests |
 |---|---|---|---|
 | [**Heimdall**](Heimdall) | Lightweight HIDS & Windows Agent: detects brute-force in SSH/Windows EventLog, blocks IPs at the firewall level with configurable TTL, notifies via Telegram/Gjallarhorn | Python, PowerShell, FastAPI, SQLite | 38 ✅ |
-| [**Mjolnir**](Mjolnir) | Automated forensic triage on a compromised host: process/network snapshots, hash lookups on VirusTotal (with caching and rate-limiting), Markdown/HTML reports | Python, psutil | 24 ✅ |
-| [**Bifrost**](Bifrost) | Multi-threaded network scanner with banner grabbing, GeoIP/WHOIS enrichment, LAN discovery, encrypted reports (PBKDF2 + Fernet) | Python, FastAPI | 44 ✅ |
-| [**Yggdrasil**](Yggdrasil) | Active Directory (LDAP/LDAPS) & Microsoft 365 / Entra ID cloud security posture audit (MFA enforcement, Global Admins, Legacy Auth) | Python, ldap3 | 27 ✅ |
-| [**Fenrir**](Fenrir) | Public threat intelligence aggregator: CISA KEV always on, optional OTX, STIX 2.1 exporter, local SQLite with stale lock protection | Python | 37 ✅ |
-| [**Sleipnir**](Sleipnir) | SOAR engine: runs YAML playbooks that orchestrate the other modules, with persistent state and an incident audit trail | Python, PyYAML | 26 ✅ |
-| [**Forseti**](Forseti) | GDPR/NIS2/DORA compliance checker for SMBs: 25 real controls, scoring, report with gaps and concrete remediations | Python | 31 ✅ |
-| [**Gjallarhorn**](Gjallarhorn) | Centralized alerting hub (Telegram/webhook/SMTP/Teams/Jira/ServiceNow) with dedup and throttling, used by Heimdall and Sleipnir | Python, FastAPI | 53 ✅ |
-| [**Ragnarök**](Ragnarok) | Desktop & Web SOC orchestrator (Tauri + FastAPI) with AI assistant (FastEmbed + ChromaDB), multi-user RBAC, and audit log | Tauri, Rust, Python | 96 ✅ |
+| [**Mjolnir**](Mjolnir) | Automated forensic triage on a compromised host: process/network snapshots, hash lookups on VirusTotal (with caching and rate-limiting), real YARA scanning (yara-python), Markdown/HTML reports | Python, psutil, yara-python | 49 ✅ |
+| [**Bifrost**](Bifrost) | Multi-threaded network scanner with banner grabbing, GeoIP/WHOIS enrichment, LAN discovery, encrypted reports (PBKDF2 + Fernet) | Python, FastAPI | 46 ✅ |
+| [**Yggdrasil**](Yggdrasil) | Active Directory (LDAP/LDAPS) & Microsoft 365 / Entra ID cloud security posture audit (MFA enforcement, Global Admins, Legacy Auth) via real Microsoft Graph API (app-only OAuth2) or JSON export | Python, ldap3, msal | 54 ✅ |
+| [**Fenrir**](Fenrir) | Public threat intelligence aggregator: CISA KEV always on, optional OTX, STIX 2.1 exporter, local SQLite with stale lock protection | Python | 48 ✅ |
+| [**Sleipnir**](Sleipnir) | SOAR engine: runs YAML playbooks that orchestrate the other modules, with persistent state and an incident audit trail | Python, PyYAML | 32 ✅ |
+| [**Forseti**](Forseti) | GDPR/NIS2/DORA/ISO27001 compliance checker for SMBs: 31 real controls (13 GDPR + 12 NIS2 + 3 DORA + 3 ISO27001), scoring, report with gaps and concrete remediations | Python | 44 ✅ |
+| [**Gjallarhorn**](Gjallarhorn) | Centralized alerting hub (Telegram/webhook/SMTP/Teams/Jira/ServiceNow) with dedup and throttling, used by Heimdall and Sleipnir | Python, FastAPI | 63 ✅ |
+| [**Ragnarök**](Ragnarok) | Desktop & Web SOC orchestrator (Tauri + FastAPI) with AI assistant (FastEmbed + ChromaDB), multi-user RBAC, and audit log | Tauri, Rust, Python | 128 ✅ |
 
 ---
 
