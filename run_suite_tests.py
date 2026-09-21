@@ -46,6 +46,7 @@ MODULE_DEFINITIONS = [
     ("Forseti", "Compliance NIS2 / GDPR / DORA", "Forseti/tests"),
     ("Gjallarhorn", "Centralized Alerting Hub", "Gjallarhorn/tests"),
     ("Ragnarok", "AI SOC Orchestrator & RAG", "Ragnarok/backend/tests"),
+    ("Ragnarok UI", "Desktop & API tests", "Ragnarok/tests"),
 ]
 
 def check_local_dev_deps() -> None:

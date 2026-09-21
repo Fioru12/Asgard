@@ -5,7 +5,7 @@
 ### Blue Team Security Suite — 9 modules, one principle: if it isn't tested, it doesn't exist.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Tests](https://img.shields.io/badge/Test-500%2B%20passing-2ea44f?style=for-the-badge)
+![Tests](https://img.shields.io/badge/Test-600%2B%20passing-2ea44f?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)
 
 [🇮🇹 Versione italiana](README.md)
@@ -78,7 +78,7 @@ Three functional groups:
 | [**Sleipnir**](Sleipnir) | SOAR engine: runs YAML playbooks that orchestrate the other modules, with persistent state and an incident audit trail | Python, PyYAML | 32 ✅ |
 | [**Forseti**](Forseti) | GDPR/NIS2/DORA/ISO27001 compliance checker for SMBs: 31 real controls (13 GDPR + 12 NIS2 + 3 DORA + 3 ISO27001), scoring, report with gaps and concrete remediations | Python | 44 ✅ |
 | [**Gjallarhorn**](Gjallarhorn) | Centralized alerting hub (Telegram/webhook/SMTP/Teams/Jira/ServiceNow) with dedup and throttling, used by Heimdall and Sleipnir | Python, FastAPI | 63 ✅ |
-| [**Ragnarök**](Ragnarok) | Desktop & Web SOC orchestrator (Tauri + FastAPI) with AI assistant (FastEmbed + ChromaDB), multi-user RBAC, and audit log | Tauri, Rust, Python | 128 ✅ |
+| [**Ragnarök**](Ragnarok) | Desktop & Web SOC orchestrator (Tauri + FastAPI) with AI assistant (FastEmbed + ChromaDB), multi-user RBAC, and audit log | Tauri, Rust, Python | 264 ✅ |
 
 ---
 
