@@ -1,5 +1,38 @@
 # Asgard Suite — Release Notes
 
+## v2.6.0 — Coverage & Structure Pass
+
+> 2026-09-22 — Full-suite verification extended to every test that exists (638 across 10 runner entries, including the 136 Ragnarok UI tests the runner never executed), Ragnarok's `server.py` split from 1790 to 1101 lines across 9 routers with zero behavior change, and the honesty bar applied to docs, packager and Docker context. Every item below was verified by running it.
+
+### Expanded (real coverage, wider than described before)
+
+- **Test suite 502 → 638**: `run_suite_tests.py` gains the `Ragnarok/tests` entry (136 Desktop & API tests previously run only via CI) plus `--setup` (one-command local deps install mirroring CI/Dockerfile), a pre-flight warning for missing `msal`/`yara-python`, and honest failed/error counts on red runs.
+- **Forseti 31 → 41 controls**: DORA and ISO 27001 grow from 3 to 8 controls each (backup, continuity, logging, privileged access…); docs updated everywhere, starter-level warning for regulated clients kept.
+- **MITRE matrix 6 → 18 techniques across 9 tactics**: both endpoints (`/api/v1/mitre/matrix`, `/api/v1/dashboard/mitre-matrix`) were serving *different* hardcoded copies — now a single source of truth (`core/mitre.py`), each technique mapped only to capabilities a module really has (`active` vs `monitored`).
+- **Ragnarok `server.py` 1790 → 1101 lines**: 9 routers (`rag`, `ops`, `pages`, `setup`, `info`, `intel`, `gdpr`, `auth`, `tenants_agents`) extracted verbatim with lazy server imports; 264/264 Ragnarok tests pass, all paths unchanged.
+
+### Fixed (found by actually running things)
+
+- **Ragnarok UI tests failed from the suite root**: `test_health_endpoint_returns_200` gave 503 outside `Ragnarok/` — two cwd-relative paths plus import-order DB binding (test users leaked into the real dev DB: 194 users found, cleaned to 1 with backup). Isolation centralized in `conftest.py`; green from any cwd.
+- **`/metrics` backup metric never emitted in production**: cwd-relative `backend/backups` path doesn't exist under Docker WORKDIR — now absolute.
+- **Release packager shipped real secrets**: the v2.5.0 zip contained `Ragnarok/backend/asgard_setup.env` with live API keys; `.env` files are now excluded (templates kept), version bumped, old leaky archive deleted.
+- **Docker images baked in secrets and GBs of build dirs**: `.dockerignore` was never even committed (ignored by mistake) — now tracked and hardened (`*.env`, `*.db`, `node_modules/`, `src-tauri/target/`…); pattern-audited, full build not run.
+- **7 wrong commands in ADOPTION_GUIDE** (plain clone, `Ragnarök` dir typo, `:8000` ports, nonexistent `--test-alert`/`--scan-type`/`--report` flags, useless backup body) — every replacement verified against real `--help`/endpoint signatures.
+- **9 orphan per-module Dockerfiles**: wrong ports and CLI flags no module accepts, referenced by nothing — deleted (−157 lines).
+- **46 pyflakes findings → 0** suite-wide (unused imports, brace-free f-strings, one dead variable), enforced by a new CI lint job plus shell syntax checks.
+
+### Verification
+
+```bash
+git clone --recursive https://github.com/Fioru12/Asgard.git
+python run_suite_tests.py --setup   # one-command local deps (new)
+python run_suite_tests.py           # 10/10 entries, 638 tests, 0 failures
+```
+
+**License: MIT — free to use, modify, and distribute. No warranty.**
+
+---
+
 ## v2.5.1 — Verification & Honesty Pass
 
 > 2026-09-15 — Every "Enterprise/MSP" claim in v2.5.0 was checked against the running code, not just re-read from the docs. Three real bugs were found and fixed; two features turned out thinner than described and have been re-labeled instead of silently left overstated.
