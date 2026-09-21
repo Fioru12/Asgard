@@ -53,7 +53,7 @@ Gli MSP e System Integrator tradizionali affrontano tre grandi sfide:
 | **Generazione Playbook Guidata da AI** | ❌ No | ⚠️ Solo prompt generici cloud | ✅ **RAG Locale Specialistico** |
 | **Costo di Avviamento** | Basso | Molto Alto (€ 15k+ / anno) | **Accessibile & Scalabile** |
 
-**Nota sulla profondità dei framework di compliance**: Forseti copre oggi GDPR (13 controlli) e NIS2 (12 controlli) in modo sostanziale; DORA e ISO 27001 sono presenti ma con solo 3 controlli ciascuno — utili come punto di partenza, non come assessment completo. Non presentarli a un cliente regolamentato (banche, assicurazioni) come "conformità DORA verificata".
+**Nota sulla profondità dei framework di compliance**: Forseti copre oggi GDPR (13 controlli) e NIS2 (12 controlli) in modo sostanziale; DORA e ISO 27001 sono presenti con 8 controlli ciascuno — una base di lavoro seria (backup, continuità, logging, accessi privilegiati), ma non un assessment completo. Non presentarli a un cliente regolamentato (banche, assicurazioni) come "conformità DORA verificata".
 
 ---
 
