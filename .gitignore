@@ -3,7 +3,6 @@
 # Git / system
 .asgard-suite-repo/
 .git/
-.dockerignore
 
 # Python
 __pycache__/

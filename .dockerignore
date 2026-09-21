@@ -1,0 +1,41 @@
+# Git
+.git
+.gitignore
+
+# Cache e artefatti Python
+__pycache__
+*.pyc
+.pytest_cache
+.venv
+venv
+
+# Stato locale (montato come volume, non incluso nell'immagine)
+.asgard-suite-repo
+Ragnarok/backend/output
+output/
+incidents/
+backups/
+.tls/
+Heimdall/heimdall.db
+Fenrir/fenrir.db
+*.db
+*.sqlite3
+
+# Secret locali: mai dentro l'immagine (l'app li rigenera o li legge
+# dai volumi/env). I template .env.example non matchano *.env e restano.
+*.env
+
+# Build frontend/desktop (GB, non servono al runtime Python)
+node_modules/
+src-tauri/target/
+dist/
+
+# Report e benchmark (rigenerabili)
+reports/
+test_reports/
+.benchmarks/
+
+# Documenti e IDE
+*.md
+.vscode
+.idea
