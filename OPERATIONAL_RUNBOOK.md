@@ -121,3 +121,121 @@ Per verificare che tutti i demoni e moduli di Asgard siano operativi sul server:
    ```
 3. **Backup Database Locale SQLite**:
    Ogni modulo tiene il proprio database SQLite nella propria cartella (es. `Heimdall/heimdall.db`, `Fenrir/fenrir.db`, `Ragnarok/backend/ragnarok_auth.db`) — non esiste una cartella `data/` condivisa. Includere l'intera directory root di Asgard nei backup di sistema schedulati copre tutti i database. Ragnarök ha inoltre una funzione di backup/restore integrata (vedi sezione "Backup & restore" nel README di Ragnarok).
+
+---
+
+## 5. Backup Centralizzato & Retention (v2.7.0)
+
+Due livelli, entrambi verificati con manifest sha256:
+
+1. **Ragnarök** (`POST /api/v1/backup`, solo admin): pota in automatico con
+   `BACKUP_KEEP_COUNT=14` e `BACKUP_RETENTION_DAYS=30` (env in `docker-compose.yml`).
+2. **Suite intera** (tutti i `*.db` dei moduli + ultimo backup Ragnarök):
+   ```bash
+   python scripts/suite_backup.py --out backups --keep 14
+   python scripts/suite_backup.py --verify-only backups/asgard_suite_backup_<TS>.zip
+   ```
+   Schedulazione consigliata — Linux cron (ogni notte ore 02:00):
+   ```
+   0 2 * * * cd /opt/Asgard && python scripts/suite_backup.py --out backups --keep 14
+   ```
+   Windows Task Scheduler: stessa riga come azione `python.exe` con argomento
+   `scripts\suite_backup.py --out backups --keep 14`, nella directory `C:\Progetti\Asgard`.
+   In Docker lo stato RAG/auth/audit vive nei volumi `asgard-rag-state`/`asgard-backups`
+   (mai `/tmp`): includerli nel piano di backup dell'host.
+
+---
+
+## 6. Rotation Secrets (v2.7.0)
+
+I default `asgard-*-key` nei compose sono placeholder DEV. In produzione:
+
+```bash
+python scripts/rotate_keys.py --write .env   # genera chiavi forti (chmod 600), solo le deboli
+python scripts/rotate_keys.py --check        # exit 1 se trova chiavi deboli (utile in CI/CD)
+```
+
+Ruota dopo ogni cambio di personale con accesso, o ogni 90 giorni. Mai committare `.env`
+(già in `.dockerignore`/`.gitignore`).
+
+---
+
+## 7. FIM — File Integrity Monitoring (v2.7.0)
+
+```bash
+cd Heimdall
+# Una volta: crea la baseline sulle path di config.yaml (fim.paths)
+python main.py fim-baseline
+# Poi via cron (es. ogni ora): esce silenzioso se tutto coincide,
+# registra NEW/MODIFIED/DELETED in tabella fim_events altrimenti
+python main.py fim-scan
+```
+
+Configurazione in `Heimdall/config.yaml` (`fim.enabled/paths/baseline/exclude`).
+
+---
+
+## 8. Playbook Resilienti (v2.7.0) — chiavi per-step
+
+```yaml
+steps:
+  - name: "Triage con retry"
+    action: "mjolnir_run_triage"
+    retries: 2          # default 0
+    retry_delay: 5      # secondi base, backoff lineare (default 1)
+    timeout: 60         # secondi per subprocess (default 15)
+  - name: "Arricchimento parallelo"
+    parallel:           # eseguiti in thread concorrenti (max 4)
+      - {name: "CTI", action: "fenrir_update"}
+      - {name: "AD",  action: "yggdrasil_audit"}
+  - name: "Opzionale"
+    action: "bifrost_scan"
+    params: {ip: "{{event.source_ip}}"}
+    continue_on_failure: true   # default false = fail-fast storico
+```
+
+---
+
+## 9. Threat Intel: MISP + NVD (v2.7.0)
+
+```bash
+export MISP_URL=https://misp.azienda.local MISP_API_KEY=<key>  # Fenrir: feed MISP come OTX
+export NVD_API_KEY=<key>   # opzionale, rate-limit NVD piu' alto
+cd Fenrir && python main.py update
+cd Bifrost && python main.py scan <ip> --enrich --nvd   # CVE + CVSS live
+```
+
+Senza env, entrambi i feed sono saltati con `[SKIP]` e il resto funziona come prima.
+
+---
+
+## 10. Evidence di Compliance (v2.7.0) + Escalation On-Call
+
+```bash
+cd Forseti
+python main.py assess --input assessment.yaml --output report.md   # include evidence auto
+python main.py assess --input assessment.yaml --output report.md --no-evidence
+```
+
+Escalation PagerDuty/Opsgenie (Gjallarhorn, mai un crash se assenti):
+`PAGERDUTY_ROUTING_KEY=<integration-key>`, `OPSGENIE_API_KEY=<key>`, `OPSGENIE_EU=true`
+per istanze europee. Severity map: critical→P1/trigger-critical, high→P2, medium→P3, low→P5.
+
+---
+
+## 11. Monitoring & Helm (v2.7.0)
+
+Stack osservabilità opzionale (Prometheus + Alertmanager + Loki + Grafana):
+```bash
+docker compose -f docker-compose.yml -f monitoring/docker-compose.monitoring.yml up -d
+# Alertmanager inoltra a Gjallarhorn via webhook; dashboard su :3000, alert su :9093
+```
+
+Deploy Kubernetes:
+```bash
+helm lint helm/asgard && helm template asgard helm/asgard   # 13 risorse attese
+helm install asgard ./helm/asgard \
+  --set ragnarok.apiKey="$(openssl rand -hex 32)" \
+  --set gjallarhorn.pagerdutyRoutingKey="..." \
+  --set gjallarhorn.opsgenieApiKey="..."
+```
