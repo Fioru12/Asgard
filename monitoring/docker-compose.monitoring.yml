@@ -44,7 +44,9 @@ services:
     environment:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-asgard-admin}
     volumes:
-      - ./docker/grafana/asgard-overview-dashboard.json:/etc/grafana/provisioning/dashboards/asgard-overview-dashboard.json:ro
+      - ./docker/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./docker/grafana/provisioning/dashboards/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboard.yml:ro
+      - ./docker/grafana/provisioning/dashboards/definitions:/etc/grafana/provisioning/dashboards/definitions:ro
       - grafana-data:/var/lib/grafana
     ports:
       - "3000:3000"
