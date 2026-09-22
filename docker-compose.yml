@@ -16,6 +16,9 @@
 #
 # Imposta prima una API key per Ragnarök (generata automaticamente se assente):
 #   set RAGNAROK_API_KEY=una-chiave-lunga-e-casuale   (PowerShell: $env:RAGNAROK_API_KEY="...")
+# Per tutte le chiavi: python scripts/rotate_keys.py --write .env
+# I default ${...:-asgard-*-key} sono placeholder DEV: scripts/rotate_keys.py
+# --check fallisce se li trova in produzione. Mai committare .env (vedi .dockerignore).
 
 name: asgard
 
@@ -31,10 +34,17 @@ x-common-env: &common-env
   RAG_REPORT_SEND_MINUTES: "1440"
 # RAG_REPORT_SEND_CRON: "08:00"   # es. report ogni mattina alle 08:00
   GJALLARHORN_HUB_URL: http://gjallarhorn:8090
-  # Il vector DB del RAG engine è volatile (ricreato dall'auto-index ogni ora):
-  # usiamo /tmp (writable da qualsiasi utente) invece di /app/asgard-state
-  # per evitare problemi di permessi con i volume Docker montati come root.
-  ASGARD_RAG_DB_PATH: /tmp/asgard-rag-db
+  # Stato persistente: il vector DB RAG e i DB auth/audit di Ragnarok vivono
+  # in named volumes (/state + backups) e sopravvivono a restart/rebuild.
+  # Non usare /tmp: in /tmp l'indice Chroma verrebbe perso ad ogni restart
+  # e ricostruito da zero all'auto-index successivo (lento e rumoroso).
+  ASGARD_RAG_DB_PATH: /state/rag_db
+  RAGNAROK_AUTH_DB_PATH: /state/ragnarok_auth.db
+  RAGNAROK_AUDIT_DB_PATH: /state/ragnarok_audit.db
+  # Retention backup Ragnarok (usata da backup.py::create_backup):
+  # tieni al massimo N archivi recenti oppure fino a D giorni.
+  BACKUP_KEEP_COUNT: "14"
+  BACKUP_RETENTION_DAYS: "30"
 
 services:
   # ------------------------------------------------------------------
@@ -122,6 +132,9 @@ services:
             # OLLAMA_URL: http://host.docker.internal:11434
     ports:
       - "8080:8080"
+    volumes:
+      - asgard-rag-state:/state
+      - asgard-backups:/app/Ragnarok/backend/backups
     depends_on:
       gjallarhorn:
         condition: service_healthy
@@ -200,4 +213,10 @@ services:
     working_dir: /app/Ragnarok/backend
     environment:
       <<: *common-env
+    volumes:
+      - asgard-rag-state:/state
     command: python -m rag.cli index
+
+volumes:
+  asgard-rag-state:
+  asgard-backups:

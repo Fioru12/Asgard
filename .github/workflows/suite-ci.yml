@@ -110,7 +110,7 @@ jobs:
         # only (no imports executed), so no module dependencies are needed.
         run: |
           pip install pyflakes
-          python -m pyflakes Heimdall/main.py Heimdall/core Heimdall/api Mjolnir/main.py Mjolnir/core Bifrost/main.py Bifrost/core Bifrost/api Yggdrasil/main.py Yggdrasil/core Fenrir/main.py Fenrir/core Sleipnir/main.py Sleipnir/core Forseti/main.py Forseti/core Forseti/api Gjallarhorn/main.py Ragnarok/backend/server.py Ragnarok/backend/auth.py Ragnarok/backend/backup.py Ragnarok/backend/core Ragnarok/backend/routers run_suite_tests.py package_release.py
+          python -m pyflakes Heimdall/main.py Heimdall/core Heimdall/api Mjolnir/main.py Mjolnir/core Bifrost/main.py Bifrost/core Bifrost/api Yggdrasil/main.py Yggdrasil/core Fenrir/main.py Fenrir/core Sleipnir/main.py Sleipnir/core Forseti/main.py Forseti/core Forseti/api Gjallarhorn/main.py Ragnarok/backend/server.py Ragnarok/backend/auth.py Ragnarok/backend/backup.py Ragnarok/backend/core Ragnarok/backend/routers run_suite_tests.py package_release.py scripts/suite_backup.py scripts/rotate_keys.py
 
       - name: Shell syntax check (installers)
         # install.ps1 / Deploy-HeimdallAgent.ps1 are covered by the Windows
@@ -118,3 +118,72 @@ jobs:
         run: |
           bash -n install.sh
           bash -n setup-express.sh
+
+  supply-chain:
+    name: Supply-chain (pip-audit + Trivy fs + SBOM)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Asgard Suite Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: pip-audit over all pinned requirements
+        # Ignore mirati e documentati (fallire rumoroso > fingere verde):
+        # chromadb 1.5.9 ha 4 CVE senza fix rilasciata (PYSEC-2026-311/3813/
+        # 3814/3815: RCE/authz sull'HTTP API server /api/v2). Asgard usa SOLO
+        # chromadb.PersistentClient embedded (rag/indexer.py, retriever.py):
+        # nessun socket HTTP, quindi non sfruttabile via rete. Rivalutare
+        # quando esce una versione patched o entro 2026-12-31.
+        run: |
+          python -m pip install --upgrade pip pip-audit
+          failed=0
+          IGNORES="--ignore-vuln PYSEC-2026-311 --ignore-vuln PYSEC-2026-3813 --ignore-vuln PYSEC-2026-3814 --ignore-vuln PYSEC-2026-3815"
+          for req in Bifrost/requirements.txt Fenrir/requirements.txt Forseti/requirements.txt Gjallarhorn/requirements.txt Heimdall/requirements.txt Mjolnir/requirements.txt Sleipnir/requirements.txt Yggdrasil/requirements.txt Ragnarok/backend/requirements.txt Ragnarok/backend/requirements-rag.txt; do
+            if [ -f "$req" ]; then
+              echo "=== auditing $req ==="
+              # shellcheck disable=SC2086
+              pip-audit -r "$req" --desc $IGNORES || failed=1
+            fi
+          done
+          exit $failed
+
+      - name: Trivy filesystem scan (HIGH,CRITICAL fail)
+        # Binario installato dallo script ufficiale (versione pinnata e
+        # verificata) invece della trivy-action, il cui tag non veniva
+        # risolto dal runner. Stessi parametri: fs, SARIF, exit 1 su HIGH+.
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
+            | sh -s -- -b /usr/local/bin v0.74.0
+          trivy --version
+          trivy fs --severity HIGH,CRITICAL --exit-code 1 \
+            --format sarif --output trivy-results.sarif .
+
+      - name: SBOM (CycloneDX JSON)
+        # cyclonedx-bom 7.x: un solo file requirements per invocazione
+        # (--of/--o, non piu' --format/--output): li uniamo deduplicati.
+        run: |
+          pip install cyclonedx-bom
+          cat Bifrost/requirements.txt Fenrir/requirements.txt \
+            Forseti/requirements.txt Gjallarhorn/requirements.txt \
+            Heimdall/requirements.txt Mjolnir/requirements.txt \
+            Sleipnir/requirements.txt Yggdrasil/requirements.txt \
+            Ragnarok/backend/requirements.txt \
+            Ragnarok/backend/requirements-rag.txt | sort -u > /tmp/all-requirements.txt
+          cyclonedx-py requirements /tmp/all-requirements.txt --of json -o sbom-asgard.json
+          ls -la sbom-asgard.json
+
+      - name: Upload SBOM + Trivy SARIF
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supply-chain-artifacts
+          if-no-files-found: warn
+          path: |
+            sbom-asgard.json
+            trivy-results.sarif

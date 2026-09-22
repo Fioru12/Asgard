@@ -13,8 +13,13 @@ x-common-env: &common-env
   RAG_AUTO_INDEX_MINUTES: "15"
   # Controlla anomalie ogni 5 minuti (più sensibile per PMI)
   RAG_ANOMALY_WATCH_MINUTES: "5"
-  # Percorso del DB vettoriale (writable da tutti)
-  ASGARD_RAG_DB_PATH: /tmp/asgard-rag-db
+  # Stato persistente su named volume (mai /tmp: in /tmp l'indice RAG
+  # verrebbe perso ad ogni restart del container).
+  ASGARD_RAG_DB_PATH: /state/rag_db
+  RAGNAROK_AUTH_DB_PATH: /state/ragnarok_auth.db
+  RAGNAROK_AUDIT_DB_PATH: /state/ragnarok_audit.db
+  BACKUP_KEEP_COUNT: "14"
+  BACKUP_RETENTION_DAYS: "30"
   # Hub di notifica centralizzato
   GJALLARHORN_HUB_URL: http://gjallarhorn-express:8090
 
@@ -78,6 +83,9 @@ services:
       # OLLAMA_URL: http://host.docker.internal:11434
     ports:
       - "8080:8080"
+    volumes:
+      - express-rag-state:/state
+      - express-backups:/app/Ragnarok/backend/backups
     depends_on:
       gjallarhorn-express:
         condition: service_healthy
@@ -108,3 +116,7 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+
+volumes:
+  express-rag-state:
+  express-backups:
