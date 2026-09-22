@@ -14,7 +14,7 @@ spec:
           for: 5m
           labels: { severity: critical }
           annotations:
-            summary: "Ragnarok non risponde ({{ $labels.instance }})"
+            summary: 'Ragnarok non risponde ({{ "{{" }} $labels.instance {{ "}}" }})'
         - alert: GjallarhornDown
           expr: up{job="asgard-gjallarhorn"} == 0
           for: 5m
@@ -26,7 +26,7 @@ spec:
           for: 1h
           labels: { severity: high }
           annotations:
-            summary: "Backup Ragnarok vecchio di {{ $value }}h (soglia 48h)"
+            summary: 'Backup Ragnarok vecchio di {{ "{{" }} $value {{ "}}" }}h (soglia 48h)'
         - alert: BruteForceSpike
           expr: increase(gjallarhorn_alerts_total[15m]) > 50
           for: 5m
