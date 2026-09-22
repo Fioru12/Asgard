@@ -165,15 +165,17 @@ jobs:
             --format sarif --output trivy-results.sarif .
 
       - name: SBOM (CycloneDX JSON)
+        # cyclonedx-bom 7.x: un solo file requirements per invocazione
+        # (--of/--o, non piu' --format/--output): li uniamo deduplicati.
         run: |
           pip install cyclonedx-bom
-          cyclonedx-py requirements \
-            -i Bifrost/requirements.txt -i Fenrir/requirements.txt \
-            -i Forseti/requirements.txt -i Gjallarhorn/requirements.txt \
-            -i Heimdall/requirements.txt -i Mjolnir/requirements.txt \
-            -i Sleipnir/requirements.txt -i Yggdrasil/requirements.txt \
-            -i Ragnarok/backend/requirements.txt \
-            --format json --output sbom-asgard.json
+          cat Bifrost/requirements.txt Fenrir/requirements.txt \
+            Forseti/requirements.txt Gjallarhorn/requirements.txt \
+            Heimdall/requirements.txt Mjolnir/requirements.txt \
+            Sleipnir/requirements.txt Yggdrasil/requirements.txt \
+            Ragnarok/backend/requirements.txt \
+            Ragnarok/backend/requirements-rag.txt | sort -u > /tmp/all-requirements.txt
+          cyclonedx-py requirements /tmp/all-requirements.txt --of json -o sbom-asgard.json
           ls -la sbom-asgard.json
 
       - name: Upload SBOM + Trivy SARIF
