@@ -1,6 +1,7 @@
 # Asgard Suite — Guided Installer (Windows / Linux / macOS)
 # Usage:
 #   install.sh            → interactive, builds and starts everything
+#   install.sh --monitoring → also start the optional monitoring stack (Prometheus/Alertmanager/Loki/Grafana)
 #   install.sh --dry-run  → show what would be done, no changes
 #   install.sh --status   → show running services
 #   install.sh --stop     → stop all services
@@ -11,17 +12,20 @@ set -euo pipefail
 DRY_RUN=false
 STATUS_ONLY=false
 STOP_ONLY=false
+MONITORING=false
 
 for arg in "$@"; do
   case "$arg" in
-    --dry-run)  DRY_RUN=true ;;
-    --status)   STATUS_ONLY=true ;;
-    --stop)     STOP_ONLY=true ;;
-    -h|--help)  head -12 "$0" | grep -E '^#' | sed 's/^#\s*//'; exit 0 ;;
+    --dry-run)     DRY_RUN=true ;;
+    --status)      STATUS_ONLY=true ;;
+    --stop)        STOP_ONLY=true ;;
+    --monitoring)  MONITORING=true ;;
+    -h|--help)  head -14 "$0" | grep -E '^#' | sed 's/^#\s*//'; exit 0 ;;
   esac
 done
 
 COMPOSE_FILE="docker-compose.yml"
+MONITORING_COMPOSE_FILE="monitoring/docker-compose.monitoring.yml"
 PROJECT_NAME="asgard"
 
 run() {
@@ -101,6 +105,13 @@ for i in $(seq 1 30); do
   sleep 2
 done
 
+# --- Optional monitoring stack ---
+if [ "$MONITORING" = true ]; then
+  echo ""
+  echo "[5/5] Starting monitoring stack (Prometheus/Alertmanager/Loki/Grafana)..."
+  run docker compose -f "$COMPOSE_FILE" -f "$MONITORING_COMPOSE_FILE" -p "$PROJECT_NAME" up -d prometheus alertmanager loki grafana
+fi
+
 # --- Show status + admin setup URL ---
 echo ""
 echo "=============================================="
@@ -125,5 +136,6 @@ echo ""
 echo "Useful commands:"
 echo "  install.sh --status    → check running services"
 echo "  install.sh --stop      → stop all services"
+echo "  install.sh --monitoring → start the full suite + monitoring stack (Prometheus :9090, Grafana :3000, Loki :3100)"
 echo "  docker compose -p asgard logs -f  → follow logs"
 echo ""

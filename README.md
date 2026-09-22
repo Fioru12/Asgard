@@ -122,6 +122,10 @@ cd Asgard
 # Build and start all 9 modules with one command:
 ./install.sh            # Linux / macOS / Git Bash
 .\install.ps1           # Windows PowerShell
+
+# Optional: also start the monitoring stack (Prometheus, Alertmanager, Loki, Grafana):
+./install.sh --monitoring          # Linux / macOS / Git Bash
+.\install.ps1 -Monitoring          # Windows PowerShell
 ```
 
 Then open **http://localhost:8080/dashboard** — the first-launch wizard will guide you through creating the admin account.
@@ -135,6 +139,8 @@ Services exposed on localhost:
 | Gjallarhorn | http://localhost:8090 |
 | Forseti | http://localhost:8091 |
 | Bifrost | http://localhost:8092 |
+| Prometheus *(con `--monitoring`)* | http://localhost:9090 |
+| Grafana *(con `--monitoring`)* | http://localhost:3000 |
 
 ---
 

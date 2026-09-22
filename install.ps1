@@ -1,6 +1,7 @@
 ﻿# Asgard Suite — Guided Installer (Windows PowerShell)
 # Usage:
 #   .\install.ps1            → interactive, builds and starts everything
+#   .\install.ps1 -Monitoring → also start the optional monitoring stack (Prometheus/Alertmanager/Loki/Grafana)
 #   .\install.ps1 -DryRun    → show what would be done, no changes
 #   .\install.ps1 -Status    → show running services
 #   .\install.ps1 -Stop      → stop all services
@@ -9,10 +10,12 @@
 param(
     [switch]$DryRun,
     [switch]$Status,
-    [switch]$Stop
+    [switch]$Stop,
+    [switch]$Monitoring
 )
 
 $ComposeFile = "docker-compose.yml"
+$MonitoringComposeFile = "monitoring\docker-compose.monitoring.yml"
 $ProjectName = "asgard"
 
 function Run-Command {
@@ -103,6 +106,13 @@ if (-not $healthy) {
     Write-Host "  Check logs with: docker compose -p asgard logs -f ragnarok"
 }
 
+# --- Optional monitoring stack ---
+if ($Monitoring) {
+    Write-Host ""
+    Write-Host "[5/5] Starting monitoring stack (Prometheus/Alertmanager/Loki/Grafana)..."
+    Run-Command { docker compose -f $ComposeFile -f $MonitoringComposeFile -p $ProjectName up -d prometheus alertmanager loki grafana }
+}
+
 # --- Show status + admin setup URL ---
 Write-Host ""
 Write-Host "==============================================" -ForegroundColor Green
@@ -127,5 +137,6 @@ Write-Host ""
 Write-Host "Useful commands:" -ForegroundColor Cyan
 Write-Host "  .\install.ps1 -Status    -> check running services"
 Write-Host "  .\install.ps1 -Stop      -> stop all services"
+Write-Host "  .\install.ps1 -Monitoring -> start the full suite + monitoring stack (Prometheus :9090, Grafana :3000, Loki :3100)"
 Write-Host "  docker compose -p asgard logs -f  -> follow logs"
 Write-Host ""
