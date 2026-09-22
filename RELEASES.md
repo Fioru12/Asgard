@@ -1,5 +1,72 @@
 # Asgard Suite — Release Notes
 
+## v2.7.0 — P0/P1/P2 Implementation Pass
+
+> 2026-09-22 — Chiusura dei gap documentati: persistenza RAG, backup con retention,
+> rotation secrets, supply-chain CI (P0); FIM, SOAR resiliente, MISP, evidence
+> automatiche (P1); escalation on-call, CVE+NVD, Helm, monitoring (P2).
+
+### P0 — Produzione minima
+
+- **RAG persistente**: `ASGARD_RAG_DB_PATH` da `/tmp` a `/state` con named volumes
+  (`asgard-rag-state`, `asgard-backups`) in `docker-compose.yml` e `-express`;
+  `/state` creato in `Dockerfile` con owner `1000` (era il motivo del `/tmp`).
+- **Backup con retention**: `Ragnarok/backend/backup.py` con `prune_old_backups()`
+  (`BACKUP_KEEP_COUNT=14`, `BACKUP_RETENTION_DAYS=30`, mai fatale) + `scripts/suite_backup.py`
+  (zip centrale verificato di tutti i `*.db` dei moduli).
+- **Secrets**: `scripts/rotate_keys.py` (`--write .env` con chmod 600, `--check` che
+  fallisce sui default `asgard-*-key`); compose + `.env.example` documentati.
+- **Supply-chain CI**: job `supply-chain` (`pip-audit` su tutti i 10 requirements,
+  Trivy fs HIGH/CRITICAL, SBOM CycloneDX); lint `pyflakes` esteso a `Gjallarhorn/core`.
+
+### P1 — Detection, SOAR, Intel, Compliance
+
+- **Heimdall FIM lite** (`core/fim.py`, `fim-baseline`/`fim-scan`, tabella `fim_events`):
+  baseline sha256, eventi NEW/MODIFIED/DELETED. Nota: lo Sigma-lite esisteva già
+  (`core/detector.py` + `rules/*.yaml`) — non è stato duplicato.
+- **Sleipnir resiliente**: `retries` + `retry_delay` + `timeout` per-step,
+  `continue_on_failure`, gruppi `parallel:` (ThreadPoolExecutor, max 4).
+  Gli errori di validazione IP non vengono mai ritentati.
+- **Fenrir MISP**: `fetch_misp_attributes()` (REST search, `MISP_URL`/`MISP_API_KEY`,
+  401/403 espliciti) + `aggregate_feeds(..., misp_url, misp_api_key)` isolato per-feed.
+- **Forseti evidence**: `core/evidence.py` (conteggi readonly da Heimdall/Fenrir/
+  Gjallarhorn, mai crash), allegata a `assess()` + sezione report + `serve`.
+
+### P2 — Escalation, Vuln, Deploy, Monitoring
+
+- **Gjallarhorn on-call**: canali `PagerDuty` (Events API v2) e `Opsgenie` (Alert API,
+  supporto `.eu`), stesso contratto `never-raise` degli altri 6 canali.
+- **Bifrost CVE**: firme 6 → 12 (Heartbleed, SambaCry, ProFTPD, IIS 6.0, PHP dev…),
+  CVSS live da NVD API v2 (`fetch_nvd_cvss`, cache, best-effort), `--enrich` con
+  tabella vulnerabilità, nuovo flag `--nvd`.
+- **Helm** (`helm/asgard/`): 5 Deployment+Service con gli stessi command/workingDir
+  del compose, PVC `asgard-rag-state`/`asgard-backups`, `PrometheusRule`.
+- **Monitoring** (`monitoring/`): `prometheus.yml`, `asgard-alerts.yml` (solo metriche
+  reali: `asgard_last_backup_hours_ago`, `gjallarhorn_alerts_total`), `alertmanager.yml`
+  verso il webhook Gjallarhorn, Loki+Promtail, `docker-compose.monitoring.yml`.
+
+### Verification
+
+```bash
+python run_suite_tests.py   # 10/10 entries, 675 tests, 0 failures (+37 vs v2.6.0)
+```
+
+| Modulo | v2.6.0 | v2.7.0 |
+|---|---|---:|
+| Heimdall | 38 | 42 |
+| Bifrost | 46 | 51 |
+| Fenrir | 48 | 53 |
+| Sleipnir | 32 | 38 |
+| Forseti | 44 | 48 |
+| Gjallarhorn | 63 | 69 |
+| Ragnarok (backend+UI) | 264 | 271 |
+| Mjolnir / Yggdrasil | invariati | invariati |
+| **Totale** | **638** | **675** |
+
+**License: MIT — free to use, modify, and distribute. No warranty.**
+
+---
+
 ## v2.6.0 — Coverage & Structure Pass
 
 > 2026-09-22 — Full-suite verification extended to every test that exists (638 across 10 runner entries, including the 136 Ragnarok UI tests the runner never executed), Ragnarok's `server.py` split from 1790 to 1101 lines across 9 routers with zero behavior change, and the honesty bar applied to docs, packager and Docker context. Every item below was verified by running it.
