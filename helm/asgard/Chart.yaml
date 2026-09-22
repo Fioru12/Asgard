@@ -1,0 +1,12 @@
+apiVersion: v2
+name: asgard
+description: Asgard Blue-Team Security Suite (Ragnarok + Heimdall + Gjallarhorn + Forseti + Bifrost)
+type: application
+version: 0.1.0
+appVersion: "2.6.0"
+keywords:
+  - security
+  - soc
+  - blue-team
+maintainers:
+  - name: Fioru12

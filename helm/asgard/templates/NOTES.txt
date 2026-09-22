@@ -1,0 +1,7 @@
+# Asgard Helm — deploy rapido
+#   helm install asgard ./helm/asgard \
+#     --set ragnarok.apiKey="$(openssl rand -hex 32)" \
+#     --set gjallarhorn.pagerdutyRoutingKey="..." \
+#     --set gjallarhorn.opsgenieApiKey="..."
+# Stato su PVC asgard-rag-state/asgard-backups (mai /tmp).
+# Monitoring: abilita ServiceMonitor via .Values.monitoring.enabled con kube-prometheus-stack.

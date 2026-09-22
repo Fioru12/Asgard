@@ -1,0 +1,78 @@
+{{- $state := "/state/rag_db" }}
+{{- range $svc := list "ragnarok" "heimdall" "gjallarhorn" "forseti" "bifrost" }}
+{{- $cfg := index $.Values $svc }}
+{{- if $cfg.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: asgard-{{ $svc }}
+  labels: { app: asgard, component: {{ $svc }} }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: asgard, component: {{ $svc }} }
+  template:
+    metadata:
+      labels: { app: asgard, component: {{ $svc }} }
+      annotations:
+        prometheus.io/scrape: {{ $.Values.monitoring.enabled | quote }}
+        prometheus.io/port: {{ $cfg.port | quote }}
+        prometheus.io/path: "/metrics"
+    spec:
+      securityContext: { runAsUser: 1000, runAsNonRoot: true }
+      containers:
+        - name: {{ $svc }}
+          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag }}"
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ $cfg.port }}
+          env:
+            - { name: ASGARD_RAG_DB_PATH, value: {{ $state | quote }} }
+            - { name: BACKUP_KEEP_COUNT, value: {{ $.Values.ragnarok.backupKeepCount | quote }} }
+            - { name: BACKUP_RETENTION_DAYS, value: {{ $.Values.ragnarok.backupRetentionDays | quote }} }
+            {{- if eq $svc "gjallarhorn" }}
+            - { name: PAGERDUTY_ROUTING_KEY, value: {{ $.Values.gjallarhorn.pagerdutyRoutingKey | quote }} }
+            - { name: OPSGENIE_API_KEY, value: {{ $.Values.gjallarhorn.opsgenieApiKey | quote }} }
+            {{- end }}
+          {{- if eq $svc "ragnarok" }}
+          command: ["python", "server.py"]
+          workingDir: /app/Ragnarok/backend
+          {{- else if eq $svc "heimdall" }}
+          command: ["python", "main.py", "api", "--host", "0.0.0.0", "--port", "8000"]
+          workingDir: /app/Heimdall
+          {{- else if eq $svc "gjallarhorn" }}
+          command: ["python", "main.py", "serve", "--host", "0.0.0.0", "--port", "8090"]
+          workingDir: /app/Gjallarhorn
+          {{- else if eq $svc "forseti" }}
+          command: ["python", "main.py", "serve", "--host", "0.0.0.0", "--port", "8091"]
+          workingDir: /app/Forseti
+          {{- else if eq $svc "bifrost" }}
+          command: ["uvicorn", "api.server:app", "--host", "0.0.0.0", "--port", "8092"]
+          workingDir: /app/Bifrost
+          {{- end }}
+          volumeMounts:
+            - { name: rag-state, mountPath: /state }
+            {{- if eq $svc "ragnarok" }}
+            - { name: backups, mountPath: /app/Ragnarok/backend/backups }
+            {{- end }}
+      volumes:
+        - name: rag-state
+          persistentVolumeClaim: { claimName: asgard-rag-state }
+        {{- if eq $svc "ragnarok" }}
+        - name: backups
+          persistentVolumeClaim: { claimName: asgard-backups }
+        {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: asgard-{{ $svc }}
+  labels: { app: asgard, component: {{ $svc }} }
+spec:
+  type: {{ $.Values.service.type }}
+  ports:
+    - { port: {{ $cfg.port }}, targetPort: {{ $cfg.port }} }
+  selector: { app: asgard, component: {{ $svc }} }
+{{- end }}
+{{- end }}

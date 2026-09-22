@@ -1,0 +1,25 @@
+# Alertmanager — route critical/high verso il webhook Gjallarhorn
+# (canale "webhook": WEBHOOK_URL=http://gjallarhorn:8090/notify).
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: gjallarhorn
+  group_by: [alertname]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  routes:
+    - matchers: [severity = "critical"]
+      receiver: gjallarhorn-urgent
+      continue: true
+
+receivers:
+  - name: gjallarhorn
+    webhook_configs:
+      - url: http://gjallarhorn:8090/notify
+        send_resolved: true
+  - name: gjallarhorn-urgent
+    webhook_configs:
+      - url: http://gjallarhorn:8090/notify
+        send_resolved: true

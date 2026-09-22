@@ -70,15 +70,15 @@ Three functional groups:
 
 | Module | What it does | Stack | Tests |
 |---|---|---|---|
-| [**Heimdall**](Heimdall) | Lightweight HIDS & Windows Agent: detects brute-force in SSH/Windows EventLog, blocks IPs at the firewall level with configurable TTL, notifies via Telegram/Gjallarhorn | Python, PowerShell, FastAPI, SQLite | 38 ✅ |
+| [**Heimdall**](Heimdall) | Lightweight HIDS & Windows Agent: detects brute-force in SSH/Windows EventLog, blocks IPs at the firewall level with configurable TTL, hash-baseline FIM, notifies via Telegram/Gjallarhorn | Python, PowerShell, FastAPI, SQLite | 42 ✅ |
 | [**Mjolnir**](Mjolnir) | Automated forensic triage on a compromised host: process/network snapshots, hash lookups on VirusTotal (with caching and rate-limiting), real YARA scanning (yara-python), Markdown/HTML reports | Python, psutil, yara-python | 49 ✅ |
-| [**Bifrost**](Bifrost) | Multi-threaded network scanner with banner grabbing, GeoIP/WHOIS enrichment, LAN discovery, encrypted reports (PBKDF2 + Fernet) | Python, FastAPI | 46 ✅ |
+| [**Bifrost**](Bifrost) | Multi-threaded network scanner with banner grabbing, GeoIP/WHOIS enrichment, CVE correlation + live NVD CVSS, LAN discovery, encrypted reports (PBKDF2 + Fernet) | Python, FastAPI | 51 ✅ |
 | [**Yggdrasil**](Yggdrasil) | Active Directory (LDAP/LDAPS) & Microsoft 365 / Entra ID cloud security posture audit (MFA enforcement, Global Admins, Legacy Auth) via real Microsoft Graph API (app-only OAuth2) or JSON export | Python, ldap3, msal | 54 ✅ |
-| [**Fenrir**](Fenrir) | Public threat intelligence aggregator: CISA KEV always on, optional OTX, STIX 2.1 exporter, local SQLite with stale lock protection | Python | 48 ✅ |
-| [**Sleipnir**](Sleipnir) | SOAR engine: runs YAML playbooks that orchestrate the other modules, with persistent state and an incident audit trail | Python, PyYAML | 32 ✅ |
-| [**Forseti**](Forseti) | GDPR/NIS2/DORA/ISO27001 compliance checker for SMBs: 41 real controls (13 GDPR + 12 NIS2 + 8 DORA + 8 ISO27001), scoring, report with gaps and concrete remediations | Python | 44 ✅ |
-| [**Gjallarhorn**](Gjallarhorn) | Centralized alerting hub (Telegram/webhook/SMTP/Teams/Jira/ServiceNow) with dedup and throttling, used by Heimdall and Sleipnir | Python, FastAPI | 63 ✅ |
-| [**Ragnarök**](Ragnarok) | Desktop & Web SOC orchestrator (Tauri + FastAPI) with AI assistant (FastEmbed + ChromaDB), multi-user RBAC, and audit log | Tauri, Rust, Python | 264 ✅ |
+| [**Fenrir**](Fenrir) | Public threat intelligence aggregator: CISA KEV always on, optional OTX/MISP, STIX 2.1 exporter, local SQLite with stale lock protection | Python | 53 ✅ |
+| [**Sleipnir**](Sleipnir) | SOAR engine: runs YAML playbooks that orchestrate the other modules, with per-step retry/timeout, parallel groups, persistent state and an incident audit trail | Python, PyYAML | 38 ✅ |
+| [**Forseti**](Forseti) | GDPR/NIS2/DORA/ISO27001 compliance checker for SMBs: 41 real controls (13 GDPR + 12 NIS2 + 8 DORA + 8 ISO27001), scoring, automatic evidence from sibling modules, report with gaps and concrete remediations | Python | 48 ✅ |
+| [**Gjallarhorn**](Gjallarhorn) | Centralized alerting hub (Telegram/webhook/SMTP/Teams/Jira/ServiceNow/PagerDuty/Opsgenie) with dedup and throttling, used by Heimdall and Sleipnir | Python, FastAPI | 69 ✅ |
+| [**Ragnarök**](Ragnarok) | Desktop & Web SOC orchestrator (Tauri + FastAPI) with AI assistant (FastEmbed + ChromaDB), multi-user RBAC, and audit log | Tauri, Rust, Python | 271 ✅ |
 
 ---
 
