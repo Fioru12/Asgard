@@ -29,9 +29,10 @@ RUN pip install --no-cache-dir \
 # Codice della suite
 COPY . /app
 
-# Utente non privilegiato. UID fisso (1000) per permessi consistenti
-# nei bind-mount e volume Docker (utile per chi usa `user: "1000" in compose).
-RUN useradd --create-home --uid 1000 asgard && chown -R 1000:1000 /app
+# Stato persistente (/state = RAG index + auth/audit DBs via env).
+# Creato qui con owner asgard (uid 1000) cosi' i named volumes ereditano
+# permessi scrivibili senza ricorrere a /tmp volatile.
+RUN mkdir -p /state /app/Ragnarok/backend/backups && useradd --create-home --uid 1000 asgard && chown -R 1000:1000 /app /state
 USER 1000
 
 # HTTP: Heimdall 8000, Ragnarök 8080, Gjallarhorn 8090, Forseti 8091, Bifrost 8092

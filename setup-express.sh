@@ -81,8 +81,8 @@ GJALLARHORN_CONTACT_EMAIL=${GJALLARHORN_CONTACT_EMAIL}
 # Ragnarok (orchestrazione)
 ASGARD_DOMAIN=${ASGARD_DOMAIN}
 
-# RAG Engine
-ASGARD_RAG_DB_PATH=/tmp/asgard-rag-db
+# RAG Engine (persistente su named volume /state, mai /tmp)
+ASGARD_RAG_DB_PATH=/state/rag_db
 RAG_AUTO_INDEX_MINUTES=15
 RAG_ANOMALY_WATCH_MINUTES=5
 EOF
