@@ -146,14 +146,15 @@ jobs:
           exit $failed
 
       - name: Trivy filesystem scan (HIGH,CRITICAL fail)
-        uses: aquasecurity/trivy-action@0.36.0
-        with:
-          scan-type: fs
-          scan-ref: .
-          format: sarif
-          output: trivy-results.sarif
-          severity: HIGH,CRITICAL
-          exit-code: "1"
+        # Binario installato dallo script ufficiale (versione pinnata e
+        # verificata) invece della trivy-action, il cui tag non veniva
+        # risolto dal runner. Stessi parametri: fs, SARIF, exit 1 su HIGH+.
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
+            | sh -s -- -b /usr/local/bin v0.74.0
+          trivy --version
+          trivy fs --severity HIGH,CRITICAL --exit-code 1 \
+            --format sarif --output trivy-results.sarif .
 
       - name: SBOM (CycloneDX JSON)
         run: |
@@ -172,6 +173,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: supply-chain-artifacts
+          if-no-files-found: warn
           path: |
             sbom-asgard.json
             trivy-results.sarif
