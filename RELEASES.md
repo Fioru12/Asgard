@@ -32,6 +32,11 @@
   `ops.py` cercava `total_documents` (mai presente). Ora `total` = somma dei conteggi;
   verificato live nel container (3 documenti → metrica 3). Nuovo test con stub
   controllato. Test Ragnarok: 271→**272**.
+- **Grafana provisioning** (`monitoring/`): la dashboard era montata come JSON nudo ma
+  mancavano datasource e provider → dashboard vuota e inutilizzabile. Ora
+  `provisioning/datasources/prometheus.yml` (uid `prometheus` → `http://prometheus:9090`)
+  + `provisioning/dashboards/dashboards.yml` con definizione montata: Grafana espone
+  **Asgard Cyber Suite - Overview** con i 4 stat reali (uptime, tenant, agenti, utenti).
 - **CI no-secrets**: gate `scripts/rotate_keys.py --check-files --allow-dev-placeholders`
   (exit 1 se un `.env` reale o un default debole non-DEV finisce nei compose) + rivalutazione
   dei 4 ignore chromadb con pip-audit aggiornato (2026-09-22): versioni ferme a 1.5.9,
