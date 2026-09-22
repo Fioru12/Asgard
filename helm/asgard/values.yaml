@@ -1,0 +1,49 @@
+# Asgard Helm values — mirror di docker-compose.yml (single image, command per servizio).
+# Stato persistente su PVC /state (RAG index + auth/audit DBs), mai /tmp.
+image:
+  repository: asgard-suite
+  tag: latest
+  pullPolicy: IfNotPresent
+
+persistence:
+  enabled: true
+  size: 5Gi
+  backupsSize: 2Gi
+
+ragnarok:
+  enabled: true
+  port: 8080
+  apiKey: ""            # vuoto = generata al boot (come in compose)
+  autoIndexMinutes: "60"
+  anomalyWatchMinutes: "15"
+  reportSendMinutes: "1440"
+  backupKeepCount: "14"
+  backupRetentionDays: "30"
+
+heimdall:
+  enabled: true
+  port: 8000
+  apiKey: "asgard-heimdall-key"   # placeholder DEV: usa --set o secret in prod
+
+gjallarhorn:
+  enabled: true
+  port: 8090
+  apiKey: "asgard-gjallarhorn-key"  # placeholder DEV
+  pagerdutyRoutingKey: ""
+  opsgenieApiKey: ""
+  opsgenieEu: false
+
+forseti:
+  enabled: true
+  port: 8091
+
+bifrost:
+  enabled: true
+  port: 8092
+  apiKey: "asgard-bifrost-key"  # placeholder DEV
+
+service:
+  type: ClusterIP
+
+monitoring:
+  enabled: true   # ServiceMonitor/PrometheusRule solo se Prometheus-operator presente

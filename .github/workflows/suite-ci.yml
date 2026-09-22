@@ -110,7 +110,7 @@ jobs:
         # only (no imports executed), so no module dependencies are needed.
         run: |
           pip install pyflakes
-          python -m pyflakes Heimdall/main.py Heimdall/core Heimdall/api Mjolnir/main.py Mjolnir/core Bifrost/main.py Bifrost/core Bifrost/api Yggdrasil/main.py Yggdrasil/core Fenrir/main.py Fenrir/core Sleipnir/main.py Sleipnir/core Forseti/main.py Forseti/core Forseti/api Gjallarhorn/main.py Ragnarok/backend/server.py Ragnarok/backend/auth.py Ragnarok/backend/backup.py Ragnarok/backend/core Ragnarok/backend/routers run_suite_tests.py package_release.py scripts/suite_backup.py scripts/rotate_keys.py
+          python -m pyflakes Heimdall/main.py Heimdall/core Heimdall/api Mjolnir/main.py Mjolnir/core Bifrost/main.py Bifrost/core Bifrost/api Yggdrasil/main.py Yggdrasil/core Fenrir/main.py Fenrir/core Sleipnir/main.py Sleipnir/core Forseti/main.py Forseti/core Forseti/api Gjallarhorn/main.py Gjallarhorn/core Ragnarok/backend/server.py Ragnarok/backend/auth.py Ragnarok/backend/backup.py Ragnarok/backend/core Ragnarok/backend/routers run_suite_tests.py package_release.py scripts/suite_backup.py scripts/rotate_keys.py
 
       - name: Shell syntax check (installers)
         # install.ps1 / Deploy-HeimdallAgent.ps1 are covered by the Windows

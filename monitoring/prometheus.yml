@@ -1,0 +1,23 @@
+# Prometheus — scrape degli endpoint /metrics reali della suite.
+# Ragnarok espone asgard_* (routers/ops.py:metrics), Gjallarhorn gjallarhorn_* (api/server.py).
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["alertmanager:9093"]
+
+rule_files:
+  - /etc/prometheus/asgard-alerts.yml
+
+scrape_configs:
+  - job_name: asgard-ragnarok
+    static_configs:
+      - targets: ["ragnarok:8080"]
+    metrics_path: /metrics
+  - job_name: asgard-gjallarhorn
+    static_configs:
+      - targets: ["gjallarhorn:8090"]
+    metrics_path: /metrics

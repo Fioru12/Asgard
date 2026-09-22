@@ -1,0 +1,35 @@
+# Regole Prometheus — gli unici nomi usati esistono davvero:
+# asgard_last_backup_hours_ago (ops.py, solo se backups/*.zip esiste),
+# gjallarhorn_alerts_total (Gjallarhorn api/server.py:prometheus_metrics).
+groups:
+  - name: asgard
+    interval: 60s
+    rules:
+      - alert: RagnarokDown
+        expr: up{job="asgard-ragnarok"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Ragnarok non risponde ({{ $labels.instance }})"
+      - alert: GjallarhornDown
+        expr: up{job="asgard-gjallarhorn"} == 0
+        for: 5m
+        labels:
+          severity: high
+        annotations:
+          summary: "Gjallarhorn non risponde — alerting cieco"
+      - alert: BackupStale
+        expr: asgard_last_backup_hours_ago > 48
+        for: 1h
+        labels:
+          severity: high
+        annotations:
+          summary: "Backup Ragnarok vecchio di {{ $value }}h (soglia 48h)"
+      - alert: BruteForceSpike
+        expr: increase(gjallarhorn_alerts_total[15m]) > 50
+        for: 5m
+        labels:
+          severity: high
+        annotations:
+          summary: "Picco alert Gjallarhorn: possibile attacco in corso"
