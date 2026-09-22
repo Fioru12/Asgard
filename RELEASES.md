@@ -211,7 +211,9 @@ All fixes verified by actually running them (live OIDC token exchange with mocke
 - **Enterprise SSO (OIDC)**: Azure AD / Entra ID, Okta, and Keycloak authentication via standard OIDC discovery, authorization-code exchange and JWKS signature verification (`/api/v1/auth/oidc/login` + `/api/v1/auth/oidc/callback`). Completed and verified in v2.5.1 — see below.
 - **Agent Remote Management & Enrollment**: One-time enrollment token generation (`/api/v1/agents/tokens`) and automated heartbeat registration for Heimdall agents (`heimdall_agent.py --enroll-token`).
 - **Prometheus Metrics Exporters**: Native `/metrics` endpoints in Ragnarök and Gjallarhorn.
-- **Grafana Dashboard Template**: Ready-to-use JSON dashboard template (`docker/grafana/asgard-overview-dashboard.json`).
+- **Grafana Dashboard Template**: dashboards provisioned al primo avvio
+  (`docker/grafana/provisioning/datasources/prometheus.yml` + `dashboards/dashboards.yml`
+  → **Asgard Cyber Suite - Overview**).
 - **MITRE ATT&CK Reference Matrix**: initial technique-to-module mapping endpoint (`/api/v1/dashboard/mitre-matrix`), covering 6 techniques across 4 tactics today. This is a curated starting reference, not a comprehensive or dynamically-verified coverage map — see the v2.5.1 audit notes below.
 - **End-to-End Attack Simulation Pipeline**: Automated incident lifecycle verification runner (`run_e2e_attack_simulation.py`).
 - **Unified Test Verification**: All 376 tests across 9 modules passed (`python run_suite_tests.py`).
