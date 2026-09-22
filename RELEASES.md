@@ -19,7 +19,10 @@
 - **Webhook Alertmanager** (`Gjallarhorn`): nuovo endpoint `/api/v1/notify/alertmanager`
   (payload standard `status/labels/alerts`, severità mappata, 400 su corpus vuoto) —
   prima `alertmanager.yml` puntava a `/notify` (404). `alertmanager.yml` ora invia
-  `X-API-Key: asgard-gjallarhorn-key`. Test: 69→**73**.
+  `X-API-Key: asgard-gjallarhorn-key` via `http_config.http_headers` e
+  `prom/alertmanager` è passato a **v0.28.0** (il campo `headers` non esiste in v0.27 →
+  crash-loop all'avvio; verificato end-to-end: alert critical via API AM → webhook
+  Gjallarhorn 200, «forwarded»=1). Test Gjallarhorn: 69→**73**.
 - **Hang runner** (`Ragnarok/conftest.py`): isolato `ASGARD_RAG_DB_PATH` su temp dir —
   `server.py` istanzia chromadb all'import sul DB condiviso `.asgard-suite-repo/rag_db`;
   con server dev/container attivi il lock SQLite bloccava run_suite_tests.py in modo
