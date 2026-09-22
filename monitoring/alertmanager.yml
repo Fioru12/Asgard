@@ -1,5 +1,7 @@
-# Alertmanager — route critical/high verso il webhook Gjallarhorn
-# (canale "webhook": WEBHOOK_URL=http://gjallarhorn:8090/notify).
+# Alertmanager — route critical/high verso l'endpoint di compatibilità
+# Gjallarhorn (/api/v1/notify/alertmanager). L'header X-API-Key DEVE
+# coincidere con GJALLARHORN_API_KEY del servizio (default compose:
+# "asgard-gjallarhorn-key"; sostituire con la key prodotta da rotate_keys.py).
 global:
   resolve_timeout: 5m
 
@@ -17,9 +19,15 @@ route:
 receivers:
   - name: gjallarhorn
     webhook_configs:
-      - url: http://gjallarhorn:8090/notify
+      - url: http://gjallarhorn:8090/api/v1/notify/alertmanager
         send_resolved: true
+        http_config:
+          headers:
+            X-API-Key: asgard-gjallarhorn-key
   - name: gjallarhorn-urgent
     webhook_configs:
-      - url: http://gjallarhorn:8090/notify
+      - url: http://gjallarhorn:8090/api/v1/notify/alertmanager
         send_resolved: true
+        http_config:
+          headers:
+            X-API-Key: asgard-gjallarhorn-key

@@ -1,7 +1,9 @@
 # Monitoring stack opzionale: Prometheus + Alertmanager + Loki + Grafana.
 # Uso: docker compose -f docker-compose.yml -f monitoring/docker-compose.monitoring.yml up -d
 # Gli alert arrivano a Gjallarhorn via webhook (canale "webhook" configurato).
-name: asgard-monitoring
+# Il project name DEVE coincidere con quello del compose principale ("asgard"):
+# top-level `name:` identici → i container vengono gestiti dallo stesso progetto.
+name: asgard
 
 services:
   prometheus:
@@ -11,8 +13,8 @@ services:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.retention.time=30d
     volumes:
-      - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ../monitoring/asgard-alerts.yml:/etc/prometheus/asgard-alerts.yml:ro
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/asgard-alerts.yml:/etc/prometheus/asgard-alerts.yml:ro
       - prometheus-data:/prometheus
     ports:
       - "9090:9090"
@@ -22,7 +24,7 @@ services:
     image: prom/alertmanager:v0.27.0
     container_name: asgard-alertmanager
     volumes:
-      - ../monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
     ports:
       - "9093:9093"
     restart: unless-stopped
@@ -31,7 +33,7 @@ services:
     image: grafana/loki:3.0.0
     container_name: asgard-loki
     volumes:
-      - ../monitoring/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - ./monitoring/loki-config.yml:/etc/loki/local-config.yaml:ro
     ports:
       - "3100:3100"
     restart: unless-stopped
@@ -42,7 +44,7 @@ services:
     environment:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-asgard-admin}
     volumes:
-      - ../docker/grafana/asgard-overview-dashboard.json:/etc/grafana/provisioning/dashboards/asgard-overview-dashboard.json:ro
+      - ./docker/grafana/asgard-overview-dashboard.json:/etc/grafana/provisioning/dashboards/asgard-overview-dashboard.json:ro
       - grafana-data:/var/lib/grafana
     ports:
       - "3000:3000"
