@@ -43,13 +43,37 @@
   del compose, PVC `asgard-rag-state`/`asgard-backups`, `PrometheusRule`.
 - **Monitoring** (`monitoring/`): `prometheus.yml`, `asgard-alerts.yml` (solo metriche
   reali: `asgard_last_backup_hours_ago`, `gjallarhorn_alerts_total`), `alertmanager.yml`
-  verso il webhook Gjallarhorn, Loki+Promtail, `docker-compose.monitoring.yml`.
+  verso l'endpoint Alertmanager di Gjallarhorn, Loki+Promtail, `docker-compose.monitoring.yml`.
+- **Runtime namespace (validato con docker compose up)**: `name: asgard` unificato nei due
+  compose e path volumi relativi alla root del progetto — prima `asgard-monitoring` e
+  `../monitoring/*` creavano container orfani/percorsi errati al merge.
 
 ### Verification
 
 ```bash
-python run_suite_tests.py   # 10/10 entries, 675 tests, 0 failures (+37 vs v2.6.0)
+python run_suite_tests.py   # 10/10 entries, 679 tests, 0 failures (+41 vs v2.6.0)
 ```
+
+### Runtime smoke (v2.7.0, 2026-09-22 — docker compose validation pass)
+
+L'intera stack è stata provata su Docker Desktop: `docker compose up -d --build` (13+5
+container). Risultati:
+
+- **9/9 container up senza crash loop** dopo il fix dei servizi on-demand
+  (fenrir/mjolnir/yggdrasil/sleipnir ereditavano il CMD `python server.py` dell'immagine →
+  ora `tail -f /dev/null`, invocati dai playbook via subprocess).
+- **6/6 moduli healthy** via `GET /api/v1/status`.
+- **Flusso auth completo**: bootstrap admin → login → token → `chat` RAG (playbook
+  suggerito, nessuna azione auto-eseguita).
+- **`/api/v1/execute` bifrost**: scan live `127.0.0.1` (25 porte, porta 8080 rilevata).
+- **Backup**: create+verify `24 file` ok; retention attive (14 backup, pruning del più vecchio).
+- **Playbook SOAR `brute_force` end-to-end**: Fenrir (1717 IOC CISA KEV), Heimdall (2 alert:
+  SSH bruteforce + Event 4625), Mjolnir report IR, Bifrost scan, Yggdrasil audit → `CONTAINED`.
+- **Monitoring**: Prometheus scrape `asgard-ragnarok`/`asgard-gjallarhorn` up, 4 alert rules
+  caricate, Loki API ok, Grafana 200.
+- **Webhook Alertmanager**: nuovo endpoint Gjallarhorn `/api/v1/notify/alertmanager`
+  (compatibile con il payload standard Alertmanager, severità mappata) — prima 404
+  (`/notify` inesistente).
 
 | Modulo | v2.6.0 | v2.7.0 |
 |---|---|---:|
@@ -58,10 +82,10 @@ python run_suite_tests.py   # 10/10 entries, 675 tests, 0 failures (+37 vs v2.6.
 | Fenrir | 48 | 53 |
 | Sleipnir | 32 | 38 |
 | Forseti | 44 | 48 |
-| Gjallarhorn | 63 | 69 |
+| Gjallarhorn | 63 | 73 |
 | Ragnarok (backend+UI) | 264 | 271 |
 | Mjolnir / Yggdrasil | invariati | invariati |
-| **Totale** | **638** | **675** |
+| **Totale** | **638** | **679** |
 
 **License: MIT — free to use, modify, and distribute. No warranty.**
 
@@ -93,7 +117,7 @@ python run_suite_tests.py   # 10/10 entries, 675 tests, 0 failures (+37 vs v2.6.
 ```bash
 git clone --recursive https://github.com/Fioru12/Asgard.git
 python run_suite_tests.py --setup   # one-command local deps (new)
-python run_suite_tests.py           # 10/10 entries, 638 tests, 0 failures
+python run_suite_tests.py           # 10/10 entries, 679 tests, 0 failures
 ```
 
 **License: MIT — free to use, modify, and distribute. No warranty.**
