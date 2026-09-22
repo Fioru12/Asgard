@@ -153,6 +153,10 @@ services:
     image: asgard-suite:latest
     container_name: asgard-mjolnir
     working_dir: /app/Mjolnir
+    # Servizio on-demand: non ha server persistente. Il CMD dell'immagine
+    # ("python server.py") e' valido solo per Ragnarok, quindi qui si resta
+    # idle; i playbook Sleipnir / le API lo invocano via subprocess.
+    command: ["tail", "-f", "/dev/null"]
     environment:
       <<: *common-env
       MJOLNIR_API_KEY: ${MJOLNIR_API_KEY:-asgard-mjolnir-key}
@@ -166,6 +170,7 @@ services:
     image: asgard-suite:latest
     container_name: asgard-yggdrasil
     working_dir: /app/Yggdrasil
+    command: ["tail", "-f", "/dev/null"]
     environment:
       <<: *common-env
       YGGDRASIL_API_KEY: ${YGGDRASIL_API_KEY:-asgard-yggdrasil-key}
@@ -179,6 +184,7 @@ services:
     image: asgard-suite:latest
     container_name: asgard-fenrir
     working_dir: /app/Fenrir
+    command: ["tail", "-f", "/dev/null"]
     environment:
       <<: *common-env
       FENRIR_API_KEY: ${FENRIR_API_KEY:-asgard-fenrir-key}
@@ -192,6 +198,7 @@ services:
     image: asgard-suite:latest
     container_name: asgard-sleipnir
     working_dir: /app/Sleipnir
+    command: ["tail", "-f", "/dev/null"]
     environment:
       <<: *common-env
       SLEIPNIR_API_KEY: ${SLEIPNIR_API_KEY:-asgard-sleipnir-key}
