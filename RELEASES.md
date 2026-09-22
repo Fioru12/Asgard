@@ -1,5 +1,66 @@
 # Asgard Suite — Release Notes
 
+## v2.7.1 — Runtime Validation & Bugfix Pass
+
+> 2026-09-22 — La suite è stata spinta fino al punto in cui ogni claim era provato a
+> runtime, non solo a test: `docker compose up` reale, playbook SOAR completo,
+> monitoring stack attivo, webhook Alertmanager→Gjallarhorn funzionante. Tutto ciò che
+> non reggeva è stato corretto. **679 test, tutti verdi.**
+
+### Fix a runtime confermati
+
+- **Crash-loop servizi on-demand** (`docker-compose.yml`): fenrir/mjolnir/yggdrasil/
+  sleipnir ereditavano il CMD `python server.py` dell'immagine → morte immediata.
+  Ora `command: ["tail", "-f", "/dev/null"]` (idle; il playbook li lancia via subprocess).
+- **Monitoring stack** (`monitoring/docker-compose.monitoring.yml`): `name: asgard`
+  uniforme (prima `asgard-monitoring` → container orfani in conflitto al merge dei due
+  compose) e path volumi relativi alla root del progetto (`./monitoring/*`,
+  `./docker/grafana/*`; prima `../monitoring/*` risolveva a `C:\Progetti\monitoring`).
+- **Webhook Alertmanager** (`Gjallarhorn`): nuovo endpoint `/api/v1/notify/alertmanager`
+  (payload standard `status/labels/alerts`, severità mappata, 400 su corpus vuoto) —
+  prima `alertmanager.yml` puntava a `/notify` (404). `alertmanager.yml` ora invia
+  `X-API-Key: asgard-gjallarhorn-key`. Test: 69→**73**.
+- **Hang runner** (`Ragnarok/conftest.py`): isolato `ASGARD_RAG_DB_PATH` su temp dir —
+  `server.py` istanzia chromadb all'import sul DB condiviso `.asgard-suite-repo/rag_db`;
+  con server dev/container attivi il lock SQLite bloccava run_suite_tests.py in modo
+  intermittente su "Ragnarok UI". Ora `run_suite_tests.py` completa in ~134s senza hang.
+- **CI no-secrets**: gate `scripts/rotate_keys.py --check-files --allow-dev-placeholders`
+  (exit 1 se un `.env` reale o un default debole non-DEV finisce nei compose) + rivalutazione
+  dei 4 ignore chromadb con pip-audit aggiornato (2026-09-22): versioni ferme a 1.5.9,
+  ignore ancora necessari fino alla patch / 2026-12-31.
+
+### Runtime smoke (docker compose up, 2026-09-22)
+
+- 9/9 container up, 6/6 moduli healthy via `GET /api/v1/status`.
+- Auth: bootstrap admin → login → token → RAG chat (suggerimento playbook, zero auto-action).
+- `execute bifrost`: scan live `127.0.0.1` (25 porte, 8080 rilevata). Backup+verify+retention OK (14).
+- Playbook SOAR `brute_force` end-to-end: Fenrir (1717 IOC CISA KEV) → Heimdall (2 alert)
+  → Mjolnir IR → Bifrost scan → Yggdrasil audit → `CONTAINED`.
+- Monitoring: Prometheus scrape ragnarok/gjallarhorn, 4 alert rules, Loki API ok, Grafana 200.
+- Webhook Alertmanager reale → Gjallarhorn: 200, notified/forwarded ok.
+
+### Verification
+
+```bash
+python run_suite_tests.py   # 10/10 entries, 679 tests, 0 failures
+```
+
+| Modulo | v2.6.0 | v2.7.1 |
+|---|---|---:|
+| Heimdall | 38 | 42 |
+| Bifrost | 46 | 51 |
+| Fenrir | 48 | 53 |
+| Sleipnir | 32 | 38 |
+| Forseti | 44 | 48 |
+| Gjallarhorn | 63 | 73 |
+| Ragnarok (backend+UI) | 264 | 271 |
+| Mjolnir / Yggdrasil | invariati | invariati |
+| **Totale** | **638** | **679** |
+
+**License: MIT — free to use, modify, and distribute. No warranty.**
+
+---
+
 ## v2.7.0 — P0/P1/P2 Implementation Pass
 
 > 2026-09-22 — Chiusura dei gap documentati: persistenza RAG, backup con retention,
@@ -43,37 +104,13 @@
   del compose, PVC `asgard-rag-state`/`asgard-backups`, `PrometheusRule`.
 - **Monitoring** (`monitoring/`): `prometheus.yml`, `asgard-alerts.yml` (solo metriche
   reali: `asgard_last_backup_hours_ago`, `gjallarhorn_alerts_total`), `alertmanager.yml`
-  verso l'endpoint Alertmanager di Gjallarhorn, Loki+Promtail, `docker-compose.monitoring.yml`.
-- **Runtime namespace (validato con docker compose up)**: `name: asgard` unificato nei due
-  compose e path volumi relativi alla root del progetto — prima `asgard-monitoring` e
-  `../monitoring/*` creavano container orfani/percorsi errati al merge.
+  verso il webhook Gjallarhorn, Loki+Promtail, `docker-compose.monitoring.yml`.
 
 ### Verification
 
 ```bash
-python run_suite_tests.py   # 10/10 entries, 679 tests, 0 failures (+41 vs v2.6.0)
+python run_suite_tests.py   # 10/10 entries, 675 tests, 0 failures (+37 vs v2.6.0)
 ```
-
-### Runtime smoke (v2.7.0, 2026-09-22 — docker compose validation pass)
-
-L'intera stack è stata provata su Docker Desktop: `docker compose up -d --build` (13+5
-container). Risultati:
-
-- **9/9 container up senza crash loop** dopo il fix dei servizi on-demand
-  (fenrir/mjolnir/yggdrasil/sleipnir ereditavano il CMD `python server.py` dell'immagine →
-  ora `tail -f /dev/null`, invocati dai playbook via subprocess).
-- **6/6 moduli healthy** via `GET /api/v1/status`.
-- **Flusso auth completo**: bootstrap admin → login → token → `chat` RAG (playbook
-  suggerito, nessuna azione auto-eseguita).
-- **`/api/v1/execute` bifrost**: scan live `127.0.0.1` (25 porte, porta 8080 rilevata).
-- **Backup**: create+verify `24 file` ok; retention attive (14 backup, pruning del più vecchio).
-- **Playbook SOAR `brute_force` end-to-end**: Fenrir (1717 IOC CISA KEV), Heimdall (2 alert:
-  SSH bruteforce + Event 4625), Mjolnir report IR, Bifrost scan, Yggdrasil audit → `CONTAINED`.
-- **Monitoring**: Prometheus scrape `asgard-ragnarok`/`asgard-gjallarhorn` up, 4 alert rules
-  caricate, Loki API ok, Grafana 200.
-- **Webhook Alertmanager**: nuovo endpoint Gjallarhorn `/api/v1/notify/alertmanager`
-  (compatibile con il payload standard Alertmanager, severità mappata) — prima 404
-  (`/notify` inesistente).
 
 | Modulo | v2.6.0 | v2.7.0 |
 |---|---|---:|
@@ -82,10 +119,10 @@ container). Risultati:
 | Fenrir | 48 | 53 |
 | Sleipnir | 32 | 38 |
 | Forseti | 44 | 48 |
-| Gjallarhorn | 63 | 73 |
+| Gjallarhorn | 63 | 69 |
 | Ragnarok (backend+UI) | 264 | 271 |
 | Mjolnir / Yggdrasil | invariati | invariati |
-| **Totale** | **638** | **679** |
+| **Totale** | **638** | **675** |
 
 **License: MIT — free to use, modify, and distribute. No warranty.**
 
@@ -117,7 +154,7 @@ container). Risultati:
 ```bash
 git clone --recursive https://github.com/Fioru12/Asgard.git
 python run_suite_tests.py --setup   # one-command local deps (new)
-python run_suite_tests.py           # 10/10 entries, 679 tests, 0 failures
+python run_suite_tests.py           # 10/10 entries, 638 tests, 0 failures
 ```
 
 **License: MIT — free to use, modify, and distribute. No warranty.**
