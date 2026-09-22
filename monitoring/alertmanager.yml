@@ -22,12 +22,16 @@ receivers:
       - url: http://gjallarhorn:8090/api/v1/notify/alertmanager
         send_resolved: true
         http_config:
-          headers:
-            X-API-Key: asgard-gjallarhorn-key
+          http_headers:
+            X-API-Key:
+              values:
+                - asgard-gjallarhorn-key
   - name: gjallarhorn-urgent
     webhook_configs:
       - url: http://gjallarhorn:8090/api/v1/notify/alertmanager
         send_resolved: true
         http_config:
-          headers:
-            X-API-Key: asgard-gjallarhorn-key
+          http_headers:
+            X-API-Key:
+              values:
+                - asgard-gjallarhorn-key
