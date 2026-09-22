@@ -136,10 +136,13 @@ jobs:
       - name: pip-audit over all pinned requirements
         # Ignore mirati e documentati (fallire rumoroso > fingere verde):
         # chromadb 1.5.9 ha 4 CVE senza fix rilasciata (PYSEC-2026-311/3813/
-        # 3814/3815: RCE/authz sull'HTTP API server /api/v2). Asgard usa SOLO
-        # chromadb.PersistentClient embedded (rag/indexer.py, retriever.py):
-        # nessun socket HTTP, quindi non sfruttabile via rete. Rivalutare
-        # quando esce una versione patched o entro 2026-12-31.
+        # 3814/3815: RCE pre-auth / RCE autenticato / cross-tenant RBAC sull'
+        # HTTP API server /api/v2). Asgard usa SOLO chromadb.PersistentClient
+        # embedded (rag/indexer.py, retriever.py): nessun socket HTTP e nessun
+        # multi-tenant, quindi non sfruttabile via rete. Rivalutato con pip-audit
+        # aggiornato al 2026-09-22: versioni disponibili ferme a 1.5.9, gli
+        # ignore restano necessari. Riprova quando esce una patch o a
+        # 2026-12-31 al più tardi.
         run: |
           python -m pip install --upgrade pip pip-audit
           failed=0
@@ -163,6 +166,18 @@ jobs:
           trivy --version
           trivy fs --severity HIGH,CRITICAL --exit-code 1 \
             --format sarif --output trivy-results.sarif .
+
+      - name: No-secrets gate (rotate_keys --check-files)
+        # Fail se un .env reale viene committato (leak di chiavi) o se un
+        # default debole non-DEV compare nei compose. I placeholder ufficiali
+        # asgard-*-key sono accettati perché dichiarati DEV nei commenti dei
+        # compose; il gate blocca tutto il resto (chiavi hardcoded, change-this,
+        # valori lunghi sospetti) con --allow-dev-placeholders.
+        run: |
+          if find . -type f -name ".env" -not -path "./.git/*" | grep -q .; then
+            echo "::error::.env file committed to the repository — rotating secrets required (git rm --cached + rotate_keys.py --write .env)" && exit 1
+          fi
+          python scripts/rotate_keys.py --check-files --allow-dev-placeholders
 
       - name: SBOM (CycloneDX JSON)
         # cyclonedx-bom 7.x: un solo file requirements per invocazione

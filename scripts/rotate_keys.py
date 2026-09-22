@@ -30,7 +30,11 @@ KEYS = [
 ]
 
 # Default deboli spediti nei compose come placeholder (mai usare in prod).
-WEAK_RE = re.compile(r"^asgard-[a-z-]*key$|^change-this-.*|^$", re.IGNORECASE)
+# Pattern non ancorato: compare dentro ${VAR:-asgard-xxx-key} o come literal.
+WEAK_RE = re.compile(r"asgard-[a-z][a-z-]*key\b", re.IGNORECASE)
+# I placeholder ufficiali del repo dev (asgard-*-key) quando dichiarati come
+# tali: --check-files --allow-dev-placeholders li accetta, blocca il resto.
+WEAK_PLACEHOLDER_RE = re.compile(r"^asgard-[a-z][a-z-]*key$", re.IGNORECASE)
 
 
 def is_weak(value: str | None) -> bool:
@@ -53,6 +57,41 @@ def check_env() -> list[str]:
         if is_weak(os.environ.get(k)):
             weak.append(k)
     return weak
+
+
+def check_compose_defaults(allow_dev_placeholders: bool = False) -> list[str]:
+    """Scansiona docker-compose*.yml per default weak hardcoded nei compose.
+
+    Un gate CI deve fallire quando il codice committato contiene chiavi deboli
+    (il deploy le prenderebbe), NON quando l'ambiente di build è semplicemente
+    privo di `.env` (caso normale di CI). I default `${VAR:-asgard-xxx-key}`
+    e i literal `asgard-*.key` nei compose sono il segnale che ci sta scivolando
+    dentro un placeholder di sviluppo.
+
+    Con allow_dev_placeholders=True i marker DIVULGATI del repo ufficiale
+    (asgard-*-key, dichiarati DEV nei commenti dei compose) sono accettati;
+    tutto il resto (chiavi corti, "change-this-*", valori lunghi hardcoded)
+    fa fallire il gate, così il CI non si rompe sui placeholder ufficiali
+    mentre blocca i leak veri.
+    """
+    import glob
+
+    weak: list[str] = []
+    for f in sorted(glob.glob(os.path.join("docker-compose*.yml"))) + sorted(
+        glob.glob(os.path.join("monitoring", "docker-compose*.yml"))
+    ):
+        try:
+            text = open(f, encoding="utf-8").read()
+        except OSError:
+            continue
+        for m in WEAK_RE.finditer(text):
+            val = m.group(0).strip().strip('"').strip("'")
+            if not val:
+                continue
+            if allow_dev_placeholders and WEAK_PLACEHOLDER_RE.fullmatch(val):
+                continue
+            weak.append(f"{os.path.basename(f)}:{val}")
+    return sorted(set(weak))
 
 
 def upsert_env_file(path: str, only_missing: bool = True) -> dict:
@@ -85,6 +124,12 @@ def upsert_env_file(path: str, only_missing: bool = True) -> dict:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", action="store_true", help="fallisce se chiavi deboli in env")
+    ap.add_argument("--check-files", action="store_true", help="fallisce se i compose contengono default deboli (gate CI)")
+    ap.add_argument(
+        "--allow-dev-placeholders",
+        action="store_true",
+        help="con --check-files accetta i marker DEV ufficiali asgard-*-key (blocca il resto)",
+    )
     ap.add_argument("--write", default=None, metavar="FILE", help="scrive chiavi forti in FILE")
     ap.add_argument("--only-missing", action="store_true", default=True)
     a = ap.parse_args()
@@ -94,6 +139,18 @@ def main() -> int:
             print(f"WEAK KEYS: {', '.join(weak)} (imposta var env forti >=32ch, vedi scripts/rotate_keys.py --write .env)", file=sys.stderr)
             return 1
         print("OK: nessuna chiave debole in env.")
+        return 0
+    if a.check_files:
+        weak = check_compose_defaults(allow_dev_placeholders=a.allow_dev_placeholders)
+        if weak:
+            print(
+                "WEAK DEFAULTS IN COMPOSE: "
+                + ", ".join(weak)
+                + " (sostituire con ${VAR} senza fallback, oppure forzare il valore via .env/sec. Vedi scripts/rotate_keys.py --write .env)",
+                file=sys.stderr,
+            )
+            return 1
+        print("OK: nessun default debole nei docker-compose.yml.")
         return 0
     if a.write:
         updated = upsert_env_file(a.write, only_missing=a.only_missing)

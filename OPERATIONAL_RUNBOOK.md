@@ -152,7 +152,9 @@ I default `asgard-*-key` nei compose sono placeholder DEV. In produzione:
 
 ```bash
 python scripts/rotate_keys.py --write .env   # genera chiavi forti (chmod 600), solo le deboli
-python scripts/rotate_keys.py --check        # exit 1 se trova chiavi deboli (utile in CI/CD)
+python scripts/rotate_keys.py --check        # exit 1 se trova chiavi deboli in env (pre-deploy)
+python scripts/rotate_keys.py --check-files --allow-dev-placeholders  # gate CI: exit 1 se un .env o
+# default non-DEV compare nei compose (vedi .github/workflows/suite-ci.yml)
 ```
 
 Ruota dopo ogni cambio di personale con accesso, o ogni 90 giorni. Mai committare `.env`
