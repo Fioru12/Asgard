@@ -5,7 +5,7 @@
 > 2026-09-22 — La suite è stata spinta fino al punto in cui ogni claim era provato a
 > runtime, non solo a test: `docker compose up` reale, playbook SOAR completo,
 > monitoring stack attivo, webhook Alertmanager→Gjallarhorn funzionante. Tutto ciò che
-> non reggeva è stato corretto. **679 test, tutti verdi.**
+> non reggeva è stato corretto. **680 test, tutti verdi.**
 
 ### Fix a runtime confermati
 
@@ -27,6 +27,11 @@
   `server.py` istanzia chromadb all'import sul DB condiviso `.asgard-suite-repo/rag_db`;
   con server dev/container attivi il lock SQLite bloccava run_suite_tests.py in modo
   intermittente su "Ragnarok UI". Ora `run_suite_tests.py` completa in ~134s senza hang.
+- **Metrica RAG** (`Ragnarok`): `asgard_rag_documents_total` era **sempre 0** anche con
+  documenti indicizzati — `get_stats()` restituisce `{collection_name: count}`, ma
+  `ops.py` cercava `total_documents` (mai presente). Ora `total` = somma dei conteggi;
+  verificato live nel container (3 documenti → metrica 3). Nuovo test con stub
+  controllato. Test Ragnarok: 271→**272**.
 - **CI no-secrets**: gate `scripts/rotate_keys.py --check-files --allow-dev-placeholders`
   (exit 1 se un `.env` reale o un default debole non-DEV finisce nei compose) + rivalutazione
   dei 4 ignore chromadb con pip-audit aggiornato (2026-09-22): versioni ferme a 1.5.9,
@@ -45,7 +50,7 @@
 ### Verification
 
 ```bash
-python run_suite_tests.py   # 10/10 entries, 679 tests, 0 failures
+python run_suite_tests.py   # 10/10 entries, 680 tests, 0 failures
 ```
 
 | Modulo | v2.6.0 | v2.7.1 |
@@ -56,9 +61,9 @@ python run_suite_tests.py   # 10/10 entries, 679 tests, 0 failures
 | Sleipnir | 32 | 38 |
 | Forseti | 44 | 48 |
 | Gjallarhorn | 63 | 73 |
-| Ragnarok (backend+UI) | 264 | 271 |
+| Ragnarok (backend+UI) | 264 | 272 |
 | Mjolnir / Yggdrasil | invariati | invariati |
-| **Totale** | **638** | **679** |
+| **Totale** | **638** | **680** |
 
 **License: MIT — free to use, modify, and distribute. No warranty.**
 
