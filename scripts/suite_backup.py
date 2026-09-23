@@ -18,6 +18,7 @@ import os
 import sys
 import time
 import zipfile
+from typing import Optional
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -40,7 +41,9 @@ def _sha256(path: str) -> str:
     return h.hexdigest()
 
 
-def collect_stores(root: str = ROOT):
+def collect_stores(root: Optional[str] = None):
+    if root is None:
+        root = ROOT
     found = []
     for label, rel in CANDIDATES:
         full = os.path.join(root, rel)
@@ -55,8 +58,8 @@ def collect_stores(root: str = ROOT):
     return found
 
 
-def create_suite_backup(out_dir: str, keep: int = 14) -> dict:
-    stores = collect_stores()
+def create_suite_backup(out_dir: str, keep: int = 14, root: Optional[str] = None) -> dict:
+    stores = collect_stores(root)
     if not stores:
         raise RuntimeError("Nessuno store trovato: esegui prima i moduli/Ragnarok.")
     os.makedirs(out_dir, exist_ok=True)
