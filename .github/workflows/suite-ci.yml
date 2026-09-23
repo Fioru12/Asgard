@@ -119,6 +119,65 @@ jobs:
           bash -n install.sh
           bash -n setup-express.sh
 
+  coverage-gate:
+    name: Coverage gate (regression floor)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Asgard Suite Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install module dependencies
+        # Same approach as the test-suite job: install every module's real
+        # requirements instead of a hand-maintained list.
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov
+          for req in */requirements.txt Ragnarok/backend/requirements.txt Ragnarok/backend/requirements-rag.txt; do
+            if [ -f "$req" ]; then
+              pip install -r "$req"
+            fi
+          done
+
+      - name: Coverage floors per module
+        # Regression floors calibrated at ~10-15 points below locally measured
+        # coverage (2026-09-22). Ragnarok is limited to backend/tests/: the UI
+        # partition drives chromadb.PersistentClient and takes minutes under
+        # coverage instrumentation, which would make this job too slow.
+        run: |
+          fail=0
+          run_cov() {
+            mod="$1"; floor="$2"; shift 2
+            cov_args=()
+            for src in $1; do
+              cov_args+=(--cov "$src")
+            done
+            shift
+            echo "=== $mod (floor: $floor%) ==="
+            cd "$mod" || exit 1
+            if ! python -m pytest "$@" -q \
+                 "${cov_args[@]}" --cov-fail-under="$floor" --cov-report=term; then
+              fail=1
+            fi
+            cd ..
+          }
+          run_cov Sleipnir 70 "main.py core" tests
+          run_cov Forseti 80 "main.py core api" tests
+          run_cov Fenrir 80 "main.py core" tests
+          run_cov Heimdall 45 "main.py core api heimdall_agent" tests
+          run_cov Bifrost 70 "main.py core api" tests
+          run_cov Mjolnir 70 "main.py core" tests
+          run_cov Gjallarhorn 75 "main.py core api" tests
+          run_cov Yggdrasil 70 "main.py core" tests
+          run_cov Ragnarok 60 "backend" backend/tests
+          exit $fail
+
   supply-chain:
     name: Supply-chain (pip-audit + Trivy fs + SBOM)
     runs-on: ubuntu-latest
