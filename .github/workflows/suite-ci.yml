@@ -178,6 +178,54 @@ jobs:
           run_cov Ragnarok 60 "backend" backend/tests
           exit $fail
 
+  type-check:
+    name: Type check (mypy, no-regression baseline)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Asgard Suite Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: mypy per module (baseline per-modulo, no-regression)
+        # Soft gate: mypy si ferma su moduli senza annotazioni complete, quindi
+        # non usiamo --strict. La baseline per-modulo (misurata 2026-09-23) fissa
+        # gli errori esistenti; il job fallisce SOLO se un modulo ne accumula più
+        # di oggi (regressione), non sul backlog storico. pyflakes resta il gate
+        # zero-warning; questo aggiunge visibilità sui tipi.
+        run: |
+          python -m pip install --upgrade pip
+          pip install mypy
+          fail=0
+          check_mod() {
+            mod="$1"; baseline="$2"
+            echo "=== $mod (mypy baseline: $baseline) ==="
+            targets=("$mod/core")
+            if [ -d "$mod/api" ]; then targets+=("$mod/api"); fi
+            errors=$(python -m mypy "${targets[@]}" \
+              --ignore-missing-imports --follow-imports=skip 2>&1 \
+              | grep -c "error:" || true)
+            echo "errors=$errors (baseline=$baseline)"
+            if [ "$errors" -gt "$baseline" ]; then
+              echo "::error::$mod: errore mypy cresciuto $baseline -> $errors"
+              fail=1
+            fi
+          }
+          check_mod Bifrost 5
+          check_mod Fenrir 0
+          check_mod Forseti 2
+          check_mod Gjallarhorn 2
+          check_mod Heimdall 6
+          check_mod Mjolnir 2
+          check_mod Sleipnir 11
+          check_mod Yggdrasil 4
+          exit $fail
+
   supply-chain:
     name: Supply-chain (pip-audit + Trivy fs + SBOM)
     runs-on: ubuntu-latest

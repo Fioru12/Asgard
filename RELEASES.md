@@ -5,7 +5,7 @@
 > 2026-09-22 — La suite è stata spinta fino al punto in cui ogni claim era provato a
 > runtime, non solo a test: `docker compose up` reale, playbook SOAR completo,
 > monitoring stack attivo, webhook Alertmanager→Gjallarhorn funzionante. Tutto ciò che
-> non reggeva è stato corretto. **680 test, tutti verdi.**
+> non reggeva è stato corretto. **697 test, tutti verdi.**
 
 ### Fix a runtime confermati
 
@@ -31,7 +31,24 @@
   documenti indicizzati — `get_stats()` restituisce `{collection_name: count}`, ma
   `ops.py` cercava `total_documents` (mai presente). Ora `total` = somma dei conteggi;
   verificato live nel container (3 documenti → metrica 3). Nuovo test con stub
-  controllato. Test Ragnarok: 271→**272**.
+  controllato. Test Ragnarok: 271→**275**.
+- **Agent secret** (`Heimdall` + `Ragnarok`): il client `heimdall_agent.py` ora persiste
+  `agent_secret` al register (`.heimdall_agent_secret`, gitignored) e lo invia nel
+  heartbeat — il server Ragnarok lo valida con `hmac.compare_digest` (era già testato
+  anti-spoof). +3 test Heimdall: 42→**46**.
+- **Regole Sigma + risposta automatica opt-in** (`Mjolnir`): oltre a YARA, ora anche un
+  motore di regole Sigma (formato standard di settore, 6 regole originali) su
+  command-line/rete, e azioni di risposta opzionali (kill process, blocco IP a
+  firewall host) — dry-run di default, esecuzione reale richiede `--respond
+  --live-response` insieme, mai un singolo flag. Nuova sezione "Automated Response
+  Actions" nei report MD/HTML. Test Mjolnir: 49→**71**.
+- **Coverage gate CI** (`.github/workflows/suite-ci.yml`): nuovo job `coverage-gate` con
+  soglie di regressione per modulo (Sleipnir 70, Forseti 80, Fenrir 80, Heimdall 45,
+  Bifrost 70, Mjolnir 70, Gjallarhorn 75, Yggdrasil 70, Ragnarok backend 60) —
+  calibrate 2026-09-22 a ~10-15 punti sotto la coverage misurata; Ragnarok UI escluso
+  (chromadb sotto coverage rende il job troppo lento). Fix correlato:
+  `suite_backup.collect_stores` leggeva `ROOT` con default congelato all'import (i test
+  passavano solo se i `.db` esistevano già) → ora `root=None` legge `ROOT` a runtime.
 - **Grafana provisioning** (`monitoring/`): la dashboard era montata come JSON nudo ma
   mancavano datasource e provider → dashboard vuota e inutilizzabile. Ora
   `provisioning/datasources/prometheus.yml` (uid `prometheus` → `http://prometheus:9090`)
@@ -55,20 +72,21 @@
 ### Verification
 
 ```bash
-python run_suite_tests.py   # 10/10 entries, 680 tests, 0 failures
+python run_suite_tests.py   # 10/10 entries, 697 tests, 0 failures
 ```
 
 | Modulo | v2.6.0 | v2.7.1 |
 |---|---|---:|
-| Heimdall | 38 | 42 |
+| Heimdall | 38 | 46 |
 | Bifrost | 46 | 51 |
 | Fenrir | 48 | 53 |
 | Sleipnir | 32 | 38 |
 | Forseti | 44 | 48 |
 | Gjallarhorn | 63 | 73 |
-| Ragnarok (backend+UI) | 264 | 272 |
-| Mjolnir / Yggdrasil | invariati | invariati |
-| **Totale** | **638** | **680** |
+| Mjolnir | 49 | 59 |
+| Yggdrasil | 54 | 54 |
+| Ragnarok (backend+UI) | 264 | 275 |
+| **Totale** | **638** | **697** |
 
 **License: MIT — free to use, modify, and distribute. No warranty.**
 

@@ -46,7 +46,8 @@ Gli MSP e System Integrator tradizionali affrontano tre grandi sfide:
 
 | Caratteristica | Antivirus Tradizionale / EDR Base | SIEM Cloud Enterprise (es. Sentinel) | Asgard Cyber Suite |
 | :--- | :--- | :--- | :--- |
-| **Rilevamento Malware Noto (hash + firme)** | ✅ Sì | ✅ Sì | ✅ Sì (Mjolnir: verifica hash via VirusTotal + scansione a firme YARA reali su eseguibili sospetti) |
+| **Rilevamento Malware Noto (hash + firme)** | ✅ Sì | ✅ Sì | ✅ Sì (Mjolnir: verifica hash via VirusTotal + scansione a firme YARA reali su eseguibili sospetti + regole Sigma comportamentali) |
+| **Risposta Automatica (SOAR-lite: kill process, blocco IP)** | ❌ No (solo alert) | ✅ Sì, spesso a pagamento extra | ✅ **Mjolnir `--respond`** — dry-run di default, esecuzione reale richiede doppia conferma esplicita (`--respond --live-response`) |
 | **Active Deception (Honeypot / Honeytoken)** | ❌ No | ❌ Modulo aggiuntivo costoso | ❌ **Non presente oggi** (valutabile come sviluppo futuro) |
 | **Autovalutazione Guidata NIS2 & GDPR/DORA/ISO27001** | ❌ No | ❌ Richiede consulenza esterna | ✅ **Guidata via questionario (Forseti)** — risposta umana richiesta, lo scoring è automatico |
 | **Privacy Dati & Zero Cloud Leakage** | ⚠️ Dipende dal fornitore | ❌ Log inviati su cloud estero | ✅ **100% On-Premise Sovrano** |
