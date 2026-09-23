@@ -5,7 +5,7 @@
 > 2026-09-22 — La suite è stata spinta fino al punto in cui ogni claim era provato a
 > runtime, non solo a test: `docker compose up` reale, playbook SOAR completo,
 > monitoring stack attivo, webhook Alertmanager→Gjallarhorn funzionante. Tutto ciò che
-> non reggeva è stato corretto. **697 test, tutti verdi.**
+> non reggeva è stato corretto. **709 test, tutti verdi.**
 
 ### Fix a runtime confermati
 
@@ -72,7 +72,7 @@
 ### Verification
 
 ```bash
-python run_suite_tests.py   # 10/10 entries, 697 tests, 0 failures
+python run_suite_tests.py   # 10/10 entries, 709 tests, 0 failures
 ```
 
 | Modulo | v2.6.0 | v2.7.1 |
@@ -83,10 +83,10 @@ python run_suite_tests.py   # 10/10 entries, 697 tests, 0 failures
 | Sleipnir | 32 | 38 |
 | Forseti | 44 | 48 |
 | Gjallarhorn | 63 | 73 |
-| Mjolnir | 49 | 59 |
+| Mjolnir | 49 | 71 |
 | Yggdrasil | 54 | 54 |
 | Ragnarok (backend+UI) | 264 | 275 |
-| **Totale** | **638** | **697** |
+| **Totale** | **638** | **709** |
 
 **License: MIT — free to use, modify, and distribute. No warranty.**
 
